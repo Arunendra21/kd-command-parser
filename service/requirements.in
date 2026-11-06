@@ -1,0 +1,10 @@
+# Direct dependencies. requirements.txt is the fully pinned lock generated from this file.
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.4.1+cpu
+transformers==4.46.3
+tokenizers==0.20.3
+safetensors==0.4.5
+fastapi==0.115.5
+uvicorn==0.32.1
+boto3==1.35.70
+numpy==1.26.4

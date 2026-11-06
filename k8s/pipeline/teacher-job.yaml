@@ -1,0 +1,36 @@
+# Parallel teacher labelling: an Indexed Job runs SHARD_COUNT worker pods at the
+# same time; each pod's SHARD_INDEX is its completion index (0..SHARD_COUNT-1).
+# __SHARD_COUNT__ and __OLLAMA_URL__ are filled in by `make label`.
+apiVersion: batch/v1
+kind: Job
+metadata: {name: teacher-label, namespace: pipeline}
+spec:
+  completionMode: Indexed
+  completions: __SHARD_COUNT__
+  parallelism: __SHARD_COUNT__
+  backoffLimit: 12
+  template:
+    metadata: {labels: {app: teacher-worker}}
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: worker
+          image: kd-worker:1.0
+          imagePullPolicy: Never
+          env:
+            - name: SHARD_INDEX
+              valueFrom:
+                fieldRef: {fieldPath: "metadata.annotations['batch.kubernetes.io/job-completion-index']"}
+            - {name: SHARD_COUNT, value: "__SHARD_COUNT__"}
+            - {name: OLLAMA_URL, value: "__OLLAMA_URL__"}
+            - {name: S3_ENDPOINT, value: "http://seaweedfs-s3.data.svc.cluster.local:8333"}
+          envFrom:
+            - secretRef: {name: s3-credentials}
+          volumeMounts:
+            - {name: prompt, mountPath: /prompts, readOnly: true}
+          resources:
+            requests: {cpu: 50m, memory: 64Mi}
+            limits: {cpu: 500m, memory: 256Mi}
+      volumes:
+        - name: prompt
+          configMap: {name: teacher-prompt}

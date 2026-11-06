@@ -1,0 +1,17 @@
+# never commit model files or credentials
+artifacts/
+*.safetensors
+*.bin
+*.pt
+.secrets/
+.env
+.env.*
+# local
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+report/*.aux
+report/*.log
+report/*.out

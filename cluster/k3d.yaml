@@ -1,0 +1,31 @@
+# Local cloud: a single-node k3s cluster in Docker (k3d).
+#   host :8080  -> Traefik ingress (port 80 of the k3d load balancer)
+#   host :8333  -> SeaweedFS S3 API (NodePort 30333), used by host-side scripts
+apiVersion: k3d.io/v1alpha5
+kind: Simple
+metadata:
+  name: kdcloud
+servers: 1
+agents: 0
+image: rancher/k3s:v1.30.6-k3s1
+ports:
+  - port: 8080:80
+    nodeFilters: [loadbalancer]
+  - port: 8333:30333
+    nodeFilters: [server:0]
+options:
+  k3s:
+    extraArgs:
+      # locally imported images (imagePullPolicy: Never) must not be garbage-collected on a small disk
+      - arg: --kubelet-arg=image-gc-high-threshold=99
+        nodeFilters: [server:*]
+      - arg: --kubelet-arg=image-gc-low-threshold=98
+        nodeFilters: [server:*]
+      - arg: --kubelet-arg=eviction-hard=imagefs.available<1%,nodefs.available<1%
+        nodeFilters: [server:*]
+  k3d:
+    wait: true
+    timeout: "180s"
+  kubeconfig:
+    updateDefaultKubeconfig: true
+    switchCurrentContext: true

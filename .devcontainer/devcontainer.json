@@ -1,0 +1,12 @@
+{
+  "name": "kd-command-parser",
+  "image": "mcr.microsoft.com/devcontainers/python:1-3.11-bookworm",
+  "hostRequirements": {"cpus": 4, "memory": "16gb"},
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {"helm": "none", "minikube": "none"},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "postCreateCommand": "curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | TAG=v5.7.4 bash && pip install --user -r requirements-dev.txt",
+  "forwardPorts": [8080, 8333]
+}

@@ -1,0 +1,16 @@
+# Host-side tooling (training, evaluation, tests, load test). CPU-only PyTorch.
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.4.1+cpu
+transformers==4.46.3
+tokenizers==0.20.3
+safetensors==0.4.5
+numpy==1.26.4
+PyYAML==6.0.3
+boto3==1.35.70
+requests==2.34.2
+fastapi==0.115.5
+uvicorn==0.32.1
+httpx==0.28.1
+pytest==8.3.4
+ruff==0.8.4
+locust==2.32.4
