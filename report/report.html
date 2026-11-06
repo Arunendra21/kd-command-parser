@@ -20,15 +20,15 @@ Repository: <a href="https://github.com/Arunendra21/kd-command-parser">https://g
 <h2>0. System overview</h2>
 <p>The teacher <b>phi3.5</b> (Phi-3.5-mini-instruct, 3.8B, Ollama, temperature 0, seed 42) labels 3,000 SLURP commands with a four-key JSON frame.
 The student <b>EleutherAI/pythia-70m</b> is fine-tuned on the teacher's replies (sequence-level KD) and served by a FastAPI service.
-Everything runs on one single-node <b>k3d</b> cluster (k3s v1.30.6) on my laptop (8 vCPU, 15 GiB RAM, Docker), in three namespaces:
+Everything runs on one single-node <b>k3d</b> cluster (k3s v1.30.6) on the laptop used for this project (8 vCPU, 15 GiB RAM, Docker), in three namespaces:
 <code>data</code> (SeaweedFS S3 with buckets <code>datasets</code> and <code>models</code>), <code>pipeline</code> (teacher workers as an Indexed Job) and
 <code>app</code> (Deployment, Service, Traefik Ingress, HPA). The laptop could not run the 3.8B teacher over 3,000 commands in the available time,
 so Ollama ran on a <b>free Google Colab T4</b> and was reached by the in-cluster workers through a free Cloudflare quick tunnel (<code>OLLAMA_URL</code>);
 model, prompt and settings are unchanged. Training and evaluation ran on the laptop CPU (4 cores). CI runs on free GitHub Actions.
-Because another program occupies host port 8080 on my laptop, my local cluster mapped the Ingress to host port 28080; <code>cluster/k3d.yaml</code> in the
+Because another program occupies host port 8080 on that laptop, the local cluster mapped the Ingress to host port 28080; <code>cluster/k3d.yaml</code> in the
 repository uses 8080, so the standard Locust command works unchanged on a fresh machine.</p>
 
-<h2>Task 1 &mdash; Object storage and parallel teacher labelling</h2>
+<h2>Task 1: Object storage and parallel teacher labelling</h2>
 <p><b>Architecture.</b> <code>make up</code> creates the cluster from <code>cluster/k3d.yaml</code>, deploys SeaweedFS (single <code>weed server -s3</code> pod, PVC, NodePort) in
 <code>data</code>, creates both buckets and uploads <code>commands_pool.jsonl</code> to <code>datasets</code> (<code>results/storage_init.log</code>).
 S3 credentials are generated per cluster into the git-ignored <code>.secrets/</code> and loaded as Kubernetes Secrets. The prompt is
@@ -41,7 +41,7 @@ cover every line. Modulo (rather than contiguous blocks) balances the load even 
 Each worker writes its own object <code>datasets/teacher/shard-&lt;i&gt;.jsonl</code> and checkpoints every 25 records, so a restarted pod resumes instead of
 starting over (useful because the teacher sits behind a tunnel). <code>scripts/check_shards.py</code> confirmed <span class="tag m">Measured</span> 3 &times; 1,000 records,
 3,000 unique ids, 0 missing, 0 repeated. Wall time <span class="tag m">Measured</span>: about 26 min for 3,000 commands (3 workers, ~1.5 s per request each).</p>
-<p><b>Cleaning.</b> <code>worker/clean.py</code> reads all shards, sorts by id and applies rules (a)&ndash;(d) in order (a record is counted under the first rule it breaks),
+<p><b>Cleaning.</b> <code>worker/clean.py</code> reads all shards, sorts by id and applies rules (a)-(d) in order (a record is counted under the first rule it breaks),
 then removes duplicate commands among the survivors (text lower-cased and whitespace-normalised; smallest id kept). Slot rule (d) accepts null or a
 non-empty string that occurs in the command (case/whitespace-insensitive). Each kept line stores the teacher's reply unchanged (<code>teacher_raw</code>)
 plus the same frame re-serialised on one line (<code>target</code>), which is the training target. Re-running <code>clean.py</code> on the committed shard files
@@ -53,7 +53,7 @@ reproduces the checksum in <code>train.sha256</code>: <code>d80d7e7bc4073d80&hel
 "seven am") despite the prompt. A teacher on a remote GPU through a tunnel is a single point of failure (mitigated by checkpoints and retries).
 Improvement: run Ollama in the cluster on a GPU node, and add a few-shot block with more normalisation counter-examples.</p>
 
-<h2>Task 2 &mdash; Training the student (sequence-level distillation)</h2>
+<h2>Task 2: Training the student (sequence-level distillation)</h2>
 <p><b>Implementation.</b> <code>training/train.py</code> (PyTorch + Transformers, CPU) reads only <code>training/config.yaml</code> (seed 42, learning rate 3e-4, batch 16,
 10 epochs, max length 128, library versions) and trains on the first 1,500 records of <code>train.jsonl</code> (its SHA-256 is verified first).
 Each example is <code>Command: &lt;text&gt;\nJSON: &lt;teacher JSON&gt;&lt;eos&gt;</code>; the loss is computed only on the JSON part (prompt tokens masked).
@@ -82,11 +82,11 @@ teacher's <i>generated output sequence</i>, i.e. the teacher's single best answe
 teacher's full <i>probability distribution over the vocabulary at every position</i> (e.g. KL divergence between softened teacher and student logits), which also
 transfers how confident the teacher was in the alternatives. (c) It is not possible here because the teacher is used only through Ollama's generate API, which returns text,
 not per-token distributions; moreover phi3.5 and Pythia use different tokenizers/vocabularies, so their distributions are not position-by-position comparable without
-an alignment step. (d) A real limitation of what I did: the student learns only the teacher's top-1 answer, including the teacher's mistakes (e.g. the 139
+an alignment step. (d) A real limitation of this approach: the student learns only the teacher's top-1 answer, including the teacher's mistakes (e.g. the 139
 normalised slots that were filtered out show the teacher's systematic errors; the ones that pass the filter are learned as truth), and nothing about uncertainty; a 70M
 model also falls into repetition loops on a few inputs (2/100 on validation in strict mode).</p>
 
-<h2>Task 3 &mdash; The inference service in a container</h2>
+<h2>Task 3: The inference service in a container</h2>
 <p><b>Implementation.</b> <code>service/app.py</code> (FastAPI, uvicorn, port 8000). Configuration comes only from <code>MODEL_URI</code>, <code>MODEL_VERSION</code>,
 <code>S3_ENDPOINT</code>, <code>MAX_NEW_TOKENS</code> (+ <code>FAULT_INJECT</code>); credentials (<code>AWS_ACCESS_KEY_ID/SECRET</code>) come from the Secret
 <code>s3-credentials</code>. At start-up a background thread downloads every object under <code>MODEL_URI</code> from SeaweedFS and loads the model; <code>/healthz</code>
@@ -105,7 +105,7 @@ status codes {200: 50}; median latency 390 ms, max 892 ms; <b>peak memory 816.5 
 <p><b>Limitations / improvements.</b> Weights are stored in float32 (282 MB); float16/int8 would halve start-up download and memory. Generation is serialised by a lock
 (one request at a time per pod, by design for a 1-CPU limit). Salvage hides a model weakness; constrained (grammar-guided) decoding would remove it at the source.</p>
 
-<h2>Task 4 &mdash; Kubernetes deployment, scaling and reliability</h2>
+<h2>Task 4: Kubernetes deployment, scaling and reliability</h2>
 <p><b>Manifests</b> (<code>k8s/app/</code>): Deployment <code>kd-service</code> (2 replicas; requests 500m CPU / 512Mi, limits 1 CPU / 1Gi; readiness <code>/readyz</code> every 2 s;
 liveness <code>/healthz</code>; rolling update <code>maxSurge 1, maxUnavailable 0</code>; a <code>preStop</code> sleep of 8 s so a Pod leaves the Service before it stops), a ClusterIP
 Service, a Traefik Ingress routing <code>/parse</code>, and an HPA (min 1, max 2, CPU 70% of the request; scale-down window 60 s so the test finishes in minutes).
@@ -122,35 +122,35 @@ e.g. <code>Downloading model from object storage: s3://models/v1 (endpoint http:
 <li><b>Recovery</b> <span class="tag m">Measured</span>: one Pod was deleted under load; the Deployment went back to 2/2 ready (<code>task4_all.log</code>).</li>
 <li><b>Load balancing</b> <span class="tag m">Measured</span>: with exactly two Ready replicas (HPA <code>minReplicas</code> temporarily 2) each replica served the share shown below.</li>
 </ul>
-<table><tr><th>Run (2&ndash;6 min, 4 users)</th><th>Requests</th><th>Failed</th><th>Error rate</th><th>p50 ms</th><th>p95 ms</th><th>req/s</th><th>Model versions</th><th>Share per replica</th></tr>
+<table><tr><th>Run (2-6 min, 4 users)</th><th>Requests</th><th>Failed</th><th>Error rate</th><th>p50 ms</th><th>p95 ms</th><th>req/s</th><th>Model versions</th><th>Share per replica</th></tr>
 <tr><td>HPA scale test</td><td>900</td><td>0</td><td>0.00%</td><td>1300</td><td>1700</td><td>3.77</td><td>v1: 902</td><td>55.3%, 44.7%</td></tr><tr><td>Load balancing (2 replicas)</td><td>497</td><td>0</td><td>0.00%</td><td>930</td><td>1400</td><td>4.18</td><td>v1: 501</td><td>49.9%, 50.1%</td></tr><tr><td>Rolling update v1&rarr;v2&rarr;undo</td><td>1463</td><td>0</td><td>0.00%</td><td>950</td><td>1400</td><td>4.07</td><td>v1: 1273, v2: 192</td><td>5.1%, 6.3%, 6.8%, 6.3%, 38.2%, 37.3%</td></tr><tr><td>Recovery (pod deleted)</td><td>723</td><td>0</td><td>0.00%</td><td>990</td><td>1600</td><td>4.04</td><td>v1: 725</td><td>8.7%, 50.9%, 40.4%</td></tr>
 <tr><td colspan="9" class="small">Same tests before the salvage step (results/before_salvage/): error rates hpa_load 1.96%, lb_test 2.00%, rolling 1.75%, recovery 2.03%.
 These failures were all <code>500 invalid_model_output</code> for the two validation commands on which the model loops (Locust cycles through the 100 validation commands,
 so 2% of requests hit them); the infrastructure itself caused no failures in either set of runs.</td></tr></table>
 <p><b>Limitations.</b> This is a <b>single-node cluster on one laptop</b>: it demonstrates Pod-level recovery, not fault tolerance across machines (losing the laptop
 loses everything, including SeaweedFS, which is a single replica on a local-path volume). HPA max 2 &times; 1 CPU limit and the host's other load bound throughput; metrics-server
-reports with a ~15&ndash;60 s delay, so scale-up lags the load. <span class="tag a">Assumption</span> Behaviour on a multi-node cloud cluster would differ (image pulls, network latency).</p>
+reports with a ~15-60 s delay, so scale-up lags the load. <span class="tag a">Assumption</span> Behaviour on a multi-node cloud cluster would differ (image pulls, network latency).</p>
 
-<h2>Task 5 &mdash; Subnetting and network access control</h2>
+<h2>Task 5: Subnetting and network access control</h2>
 <p>Allocation from 10.20.0.0, largest first, each block right after the previous one, smallest prefix with 2<sup>32&minus;p</sup>&minus;2 &ge; hosts (working in <code>network/subnets.md</code>):</p>
 <table><tr><th>Subnet</th><th>Hosts needed</th><th>Network</th><th>Prefix</th><th>Usable range</th><th>Broadcast</th><th>Usable hosts</th></tr>
-<tr><td>app</td><td>1000</td><td>10.20.0.0</td><td>/22</td><td>10.20.0.1 – 10.20.3.254</td><td>10.20.3.255</td><td>1022</td></tr><tr><td>public</td><td>250</td><td>10.20.4.0</td><td>/24</td><td>10.20.4.1 – 10.20.4.254</td><td>10.20.4.255</td><td>254</td></tr><tr><td>data</td><td>100</td><td>10.20.5.0</td><td>/25</td><td>10.20.5.1 – 10.20.5.126</td><td>10.20.5.127</td><td>126</td></tr><tr><td>management</td><td>20</td><td>10.20.5.128</td><td>/27</td><td>10.20.5.129 – 10.20.5.158</td><td>10.20.5.159</td><td>30</td></tr></table>
+<tr><td>app</td><td>1000</td><td>10.20.0.0</td><td>/22</td><td>10.20.0.1 to 10.20.3.254</td><td>10.20.3.255</td><td>1022</td></tr><tr><td>public</td><td>250</td><td>10.20.4.0</td><td>/24</td><td>10.20.4.1 to 10.20.4.254</td><td>10.20.4.255</td><td>254</td></tr><tr><td>data</td><td>100</td><td>10.20.5.0</td><td>/25</td><td>10.20.5.1 to 10.20.5.126</td><td>10.20.5.127</td><td>126</td></tr><tr><td>management</td><td>20</td><td>10.20.5.128</td><td>/27</td><td>10.20.5.129 to 10.20.5.158</td><td>10.20.5.159</td><td>30</td></tr></table>
 <p><b>NACL of the public subnet</b> (<code>network/nacl.json</code>). Inbound: 50 deny all from 198.51.100.0/24; 100/110 allow TCP 80/443 from 0.0.0.0/0; 120 allow TCP 22 from
-management 10.20.5.128/27; 130 allow TCP 1024&ndash;65535 from app 10.20.0.0/22 (replies from the app's port 8000 to the load balancer's ephemeral ports); everything else
-falls to the default deny. Outbound: 100 allow TCP 8000 to 10.20.0.0/22; 110 allow TCP 1024&ndash;65535 to 0.0.0.0/0 (replies to clients' ephemeral ports).
+management 10.20.5.128/27; 130 allow TCP 1024-65535 from app 10.20.0.0/22 (replies from the app's port 8000 to the load balancer's ephemeral ports); everything else
+falls to the default deny. Outbound: 100 allow TCP 8000 to 10.20.0.0/22; 110 allow TCP 1024-65535 to 0.0.0.0/0 (replies to clients' ephemeral ports).
 <code>nacl_sim.py --check</code> on <code>packets_sample.jsonl</code>: <b>6 / 6 = 100.0%</b> <span class="tag m">Measured</span>.</p>
 <p><b>Why replies need their own rules.</b> A NACL is <i>stateless</i>: it does not remember that it allowed a request, so the reply packet is checked again on its own,
-against the rules of its direction. A client's request to port 443 is allowed inbound, but the answer travels outbound to the client's ephemeral port (1024&ndash;65535), and the
+against the rules of its direction. A client's request to port 443 is allowed inbound, but the answer travels outbound to the client's ephemeral port (1024-65535), and the
 app's answer to the load balancer arrives inbound on the balancer's ephemeral port; without rules 110 (outbound) and 130 (inbound) those replies would hit the default deny.
 <b>Why order matters.</b> Rules are evaluated from the lowest number and the first match wins. A packet from 198.51.100.9 to port 443 matches both "deny 198.51.100.0/24" and
 "allow 443 from anywhere"; the deny only works because its number (50) is lower than the allow (110). Numbered after the allow, it would never be reached.</p>
 
-<h2>Task 6 &mdash; Reproducibility, testing and CI/CD</h2>
+<h2>Task 6: Reproducibility, testing and CI/CD</h2>
 <p><b>Reproducibility.</b> From a fresh clone: <code>git clone https://github.com/Arunendra21/kd-command-parser.git</code>, <code>cd kd-command-parser</code>, <code>make up</code> (3 commands). <code>make up</code> creates the
 cluster, secrets, SeaweedFS, buckets and dataset, builds and imports both images, downloads <code>model-v1</code>/<code>model-v2</code> from GitHub Releases (verifying
 <code>model.sha256</code>) into <code>s3://models/</code>, and deploys the app; <code>make down</code> deletes the cluster. A Codespaces <code>devcontainer.json</code> provides
 Docker, k3d, kubectl and gh. <b>CI</b> (<code>.github/workflows/ci.yml</code>), stages in order: lint (ruff) &rarr; unit tests (16 pytest tests: schema validation, salvage,
-cleaning rules (a)&ndash;(e) and count identity, sharding coverage, API headers/FAULT_INJECT/readiness, NACL) &rarr; evaluation (downloads the model from the GitHub Release,
+cleaning rules (a)-(e) and count identity, sharding coverage, API headers/FAULT_INJECT/readiness, NACL) &rarr; evaluation (downloads the model from the GitHub Release,
 verifies its checksum, runs <code>predict.py</code> + <code>score.py</code> on validation) &rarr; quality gate (<code>score.py --min-validity 95</code>), plus a gitleaks secret scan
 (reports no leaks) <span class="tag m">Measured</span>.</p>
 <p><b>The gate doing its job</b> <span class="tag m">Measured</span>: run with the deliberately bad model (untrained Pythia-70M) fails at the quality gate with
@@ -159,13 +159,13 @@ verifies its checksum, runs <code>predict.py</code> + <code>score.py</code> on v
 <p><b>Limitations / improvements.</b> CI does not start a cluster; an end-to-end job (k3d inside the runner, Locust smoke test) would catch manifest regressions.
 Images are built locally and imported, not pushed to a registry.</p>
 
-<h2>Task 7 &mdash; Performance, cost and review</h2>
+<h2>Task 7: Performance, cost and review</h2>
 <p><b>Standard load test</b> (<code>locust ... --users 4 --spawn-rate 4 --run-time 2m</code> against the Ingress; <code>results/loadtest_stats.csv</code>,
 <code>loadtest_headers.json</code>, <code>loadtest_locust.log</code>) <span class="tag m">Measured</span>: <b>p50 960 ms, p95 1400 ms</b>, throughput <b>4.07 req/s</b>,
 <b>485 requests, 0 failed (error rate 0.00%)</b>; share per replica:
 kd-service-6797f8b74-cg8ns: 49.8%, kd-service-6797f8b74-25mgd: 50.2%.
 Pod resources during the run (<code>kubectl top pods</code> every 10 s, <code>task7_top.txt</code>):
-kd-service-6797f8b74-25mgd: CPU 358&ndash;1000m, memory 362&ndash;384 MiB; kd-service-6797f8b74-cg8ns: CPU 103&ndash;1000m, memory 400&ndash;439 MiB.
+kd-service-6797f8b74-25mgd: CPU 358-1000m, memory 362-384 MiB; kd-service-6797f8b74-cg8ns: CPU 103-1000m, memory 400-439 MiB.
 Cold-start median (Task 4): 5 s.</p>
 <p><b>Cost</b> (<code>data/rate_card.json</code>: INR 3.50 per vCPU-hour, INR 0.45 per GiB-hour; each replica billed for its limits) <span class="tag m">Measured</span> for throughput, <span class="tag a">Assumption</span> that the
 replicas observed in the run are the replicas running:</p>
@@ -180,7 +180,7 @@ cost per 1000 requests = 7.9000 / 14666.4 x 1000 = 0.5386 INR</pre>
 <tr><td>Data and storage</td><td>3000 teacher replies &rarr; 2811 kept; 139 rejected by rule (d); checksum reproduced</td>
 <td>SeaweedFS is one replica on a node-local volume; teacher reachable only through a tunnel</td><td>Replicated SeaweedFS (3 volume servers) or managed S3; teacher inside the cluster</td></tr>
 <tr><td>Model quality</td><td>Student v1 full frame 52% vs teacher 46%; strict JSON validity 98%</td>
-<td>Inherits teacher errors; repetition loops on ~1&ndash;2% of inputs</td><td>Grammar-constrained decoding; more/cleaner data; logit-level KD with a same-tokenizer teacher</td></tr>
+<td>Inherits teacher errors; repetition loops on ~1-2% of inputs</td><td>Grammar-constrained decoding; more/cleaner data; logit-level KD with a same-tokenizer teacher</td></tr>
 <tr><td>Latency and throughput</td><td>p50 960 ms, p95 1400 ms, 4.07 req/s with 4 users</td>
 <td>One request at a time per pod; max 2 replicas</td><td>int8/ONNX inference, KV-cache reuse, higher max replicas, batching</td></tr>
 <tr><td>Resource utilisation</td><td>max 1000m CPU / 384 MiB; max 1000m CPU / 439 MiB per pod; Task 3 peak 816.5 MiB</td>
@@ -203,11 +203,11 @@ cost per 1000 requests = 7.9000 / 14666.4 x 1000 = 0.5386 INR</pre>
 <li>k3d, K3s, SeaweedFS, Kubernetes (Deployments, Services, Probes, Secrets, HPA, resource metrics), Traefik, Locust, Gitleaks documentation.</li>
 <li>AWS VPC User Guide: Network ACLs. Google SRE Book: Service Level Objectives.</li>
 </ol>
-<h2>Appendix A &mdash; Commands</h2>
+<h2>Appendix A: Commands</h2>
 <pre>make up | make label OLLAMA_URL=... SHARD_COUNT=3 | make clean-data | make teacher-eval OLLAMA_URL=...
 make train SUBSET=50 | make train | make train-v2 | make publish VERSION=v1 | make release VERSION=v1
 make eval-base | make eval-student VERSION=v1 | make task3 | make task4 | make task7 | make test | make down</pre>
-<h2>Appendix B &mdash; Teacher prompt (prompts/teacher_prompt.txt, first lines)</h2>
+<h2>Appendix B: Teacher prompt (prompts/teacher_prompt.txt, first lines)</h2>
 <pre>You are the command parser of a voice assistant. Read one short English command and reply with exactly one JSON object that has exactly these four keys, in this order: "intent", "date", "time", "place".
 
 "intent" must be exactly one of these eight values:
