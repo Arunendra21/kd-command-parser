@@ -116,8 +116,7 @@ def ltrow(name, d):
 
 
 REPO = "https://github.com/Arunendra21/kd-command-parser"
-MEAS = '<span class="tag m">Measured</span>'
-ASSUME = '<span class="tag a">Assumption</span>'
+ASSUME = '<i>(assumption)</i>'
 
 html = f"""<!doctype html><html><head><meta charset="utf-8"><title>KD Command Parser Report</title>
 <style>
@@ -135,8 +134,8 @@ code, pre {{ font-family: 'DejaVu Sans Mono', monospace; font-size: 7.8pt; }} pr
 <h1>Knowledge Distillation and Deployment of a Lightweight Command-Parsing Model on a Local Cloud</h1>
 <p class="meta">Cloud Computing (CS3081) mini project &middot; <b>Arunendra Tripathi</b>, Roll No. <b>230103016</b>, IIIT Manipur &middot;
 Repository: <a href="{REPO}">{REPO}</a> (commit tagged <code>final</code>) &middot; Model releases: <a href="{REPO}/releases">{REPO}/releases</a></p>
-<p class="small">Labels: {MEAS} = a number read from a file in <code>results/</code> (the builder <code>report/build_report.py</code> fills every one of them);
-{ASSUME} = a stated assumption, not a measurement.</p>
+<p class="small">All numbers in this report come from the runs described below and can be checked in the files under <code>results/</code>
+(the PDF is generated from those files by <code>report/build_report.py</code>). Anything that was not measured is marked <i>(assumption)</i>.</p>
 
 <h2>0. System overview</h2>
 <p>The teacher <b>phi3.5</b> (Phi-3.5-mini-instruct, 3.8B, Ollama, temperature 0, seed 42) labels 3,000 SLURP commands with a four-key JSON frame.
@@ -160,16 +159,16 @@ satisfies <i>n</i> mod <code>SHARD_COUNT</code> = <code>SHARD_INDEX</code>. The 
 <code>completions = parallelism = 3</code>; each pod's <code>SHARD_INDEX</code> is its completion index (downward API), so the three shards are disjoint and together
 cover every line. Modulo (rather than contiguous blocks) balances the load even if the file is sorted, and needs no knowledge of the file length.
 Each worker writes its own object <code>datasets/teacher/shard-&lt;i&gt;.jsonl</code> and checkpoints every 25 records, so a restarted pod resumes instead of
-starting over (useful because the teacher sits behind a tunnel). <code>scripts/check_shards.py</code> confirmed {MEAS} 3 &times; 1,000 records,
-3,000 unique ids, 0 missing, 0 repeated. Wall time {MEAS}: about 26 min for 3,000 commands (3 workers, ~1.5 s per request each).</p>
+starting over (useful because the teacher sits behind a tunnel). <code>scripts/check_shards.py</code> confirmed 3 &times; 1,000 records,
+3,000 unique ids, 0 missing, 0 repeated. Wall time: about 26 min for 3,000 commands (3 workers, ~1.5 s per request each).</p>
 <p><b>Cleaning.</b> <code>worker/clean.py</code> reads all shards, sorts by id and applies rules (a)-(d) in order (a record is counted under the first rule it breaks),
 then removes duplicate commands among the survivors (text lower-cased and whitespace-normalised; smallest id kept). Slot rule (d) accepts null or a
 non-empty string that occurs in the command (case/whitespace-insensitive). Each kept line stores the teacher's reply unchanged (<code>teacher_raw</code>)
 plus the same frame re-serialised on one line (<code>target</code>), which is the training target. Re-running <code>clean.py</code> on the committed shard files
-reproduces the checksum in <code>train.sha256</code>: <code>{counts['sha256'][:16]}&hellip;</code> {MEAS}.</p>
+reproduces the checksum in <code>train.sha256</code>: <code>{counts['sha256'][:16]}&hellip;</code>.</p>
 <table><tr><th>Input</th><th>(a) not JSON</th><th>(b) wrong keys</th><th>(c) bad intent</th><th>(d) slot not in command</th><th>Duplicates</th><th>Kept</th><th>Check</th></tr>
 <tr><td>{counts['input']}</td><td>{counts['a_invalid_json']}</td><td>{counts['b_wrong_keys']}</td><td>{counts['c_bad_intent']}</td><td>{counts['d_slot_not_in_command']}</td>
-<td>{counts['e_duplicates']}</td><td>{counts['kept']}</td><td>{counts['a_invalid_json']}+{counts['b_wrong_keys']}+{counts['c_bad_intent']}+{counts['d_slot_not_in_command']}+{counts['e_duplicates']}+{counts['kept']} = {counts['input']} {MEAS}</td></tr></table>
+<td>{counts['e_duplicates']}</td><td>{counts['kept']}</td><td>{counts['a_invalid_json']}+{counts['b_wrong_keys']}+{counts['c_bad_intent']}+{counts['d_slot_not_in_command']}+{counts['e_duplicates']}+{counts['kept']} = {counts['input']}</td></tr></table>
 <p><b>Limitations / improvements.</b> (d) is the main loss ({counts['d_slot_not_in_command']} records): the teacher sometimes normalises values (e.g. "7 am" for
 "seven am") despite the prompt. A teacher on a remote GPU through a tunnel is a single point of failure (mitigated by checkpoints and retries).
 Improvement: run Ollama in the cluster on a GPU node, and add a few-shot block with more normalisation counter-examples.</p>
@@ -182,8 +181,8 @@ The seed is fixed in code (Python, NumPy, PyTorch, data-loader generator). <code
 v2 = the same settings with one more epoch (<code>training/config_v2.yaml</code>). <code>training/publish.py</code> writes <code>model.sha256</code> and uploads model,
 tokenizer, <code>version.json</code> and checksums to <code>s3://models/v1/</code> and <code>v2/</code>; the same files are the assets of GitHub Releases
 <code>model-v1</code> and <code>model-v2</code>. The downloaded Release <code>model.safetensors</code> matches <code>models/v1/model.sha256</code>
-(<code>{sha_v1[:16]}&hellip;</code>; <code>results/release_v1_checksum_verify.txt</code>) {MEAS}.</p>
-<p><b>Loss per epoch</b> {MEAS} v1: {", ".join(f"{l:.3f}" for _, l in l1)} &nbsp;|&nbsp; v2: {", ".join(f"{l:.3f}" for _, l in l2)}.
+(<code>{sha_v1[:16]}&hellip;</code>; <code>results/release_v1_checksum_verify.txt</code>).</p>
+<p><b>Loss per epoch</b> v1: {", ".join(f"{l:.3f}" for _, l in l1)} &nbsp;|&nbsp; v2: {", ".join(f"{l:.3f}" for _, l in l2)}.
 Training time v1 {v1info['train_seconds']/60:.0f} min, v2 {v2info['train_seconds']/60:.0f} min on 4 CPU cores.</p>
 <table><tr><th>Model (validation.jsonl, 100 commands)</th><th>JSON valid</th><th>Intent</th><th>Date</th><th>Time</th><th>Place</th><th>Full frame</th><th>Note</th></tr>
 {score_row("Teacher phi3.5 (same prompt/settings)", teacher, "results/teacher_validation.json")}
@@ -193,17 +192,17 @@ Training time v1 {v1info['train_seconds']/60:.0f} min, v2 {v2info['train_seconds
 {score_row("Student v2, raw output (strict)", s2, "student_v2_validation.json")}
 {score_row("Student v2, as served", s2s, "")}
 </table>
-<p>All numbers {MEAS}. <b>What changed.</b> The untrained model continues the text with unrelated prose or a lone "{{"; it never produces the format (0% everywhere).
-After distillation the student reproduces the frame format almost perfectly and copies slot phrases from the command. Its full-frame score
-({s1['full_frame']:.0f}%) is close to, here even slightly above, the teacher's ({teacher['full_frame']:.0f}%): it learned the teacher's behaviour, including its
-labelling conventions, and on 100 examples a few points are within noise. The student cannot be better than the teacher in general; the gap to the gold labels
-(intent {s1['intent_accuracy']:.0f}%) is inherited from the teacher ({teacher['intent_accuracy']:.0f}%).</p>
+<p>All numbers. <b>What changed.</b> The untrained model continues the text with unrelated prose or a lone "{{"; it never produces the format (0% everywhere).
+After distillation the student gets the frame format right on 98 of 100 inputs and copies slot phrases from the command. Its full-frame score
+({s1['full_frame']:.0f}%) came out a little above the teacher's ({teacher['full_frame']:.0f}%). With only 100 validation commands a gap of six points is a handful of
+commands, so this should not be read as the student being better; it mostly copied the teacher's labelling habits. The intent accuracy is the same for both
+({s1['intent_accuracy']:.0f}% and {teacher['intent_accuracy']:.0f}%), which fits that reading.</p>
 <p><b>Sequence-level vs. logit-based distillation.</b> (a) <i>Sequence-level KD</i> (Kim &amp; Rush, 2016) trains the student with ordinary cross-entropy on the
 teacher's <i>generated output sequence</i>, i.e. the teacher's single best answer is the hard target. (b) <i>Logit-based (token-level) KD</i> trains the student to match the
 teacher's full <i>probability distribution over the vocabulary at every position</i> (e.g. KL divergence between softened teacher and student logits), which also
 transfers how confident the teacher was in the alternatives. (c) It is not possible here because the teacher is used only through Ollama's generate API, which returns text,
 not per-token distributions; moreover phi3.5 and Pythia use different tokenizers/vocabularies, so their distributions are not position-by-position comparable without
-an alignment step. (d) A real limitation of this approach: the student learns only the teacher's top-1 answer, including the teacher's mistakes (e.g. the {counts['d_slot_not_in_command']}
+an alignment step. (d) One real limitation: the student learns only the teacher's top-1 answer, including the teacher's mistakes (e.g. the {counts['d_slot_not_in_command']}
 normalised slots that were filtered out show the teacher's systematic errors; the ones that pass the filter are learned as truth), and nothing about uncertainty; a 70M
 model also falls into repetition loops on a few inputs (2/100 on validation in strict mode).</p>
 
@@ -216,10 +215,10 @@ cuts the text at the first newline/closing brace and checks it against <code>sch
 If that strict check fails, a deterministic <b>salvage</b> step takes the first allowed intent and the first value of each slot <i>from the model's own text</i>, keeping a slot only if it
 occurs in the command (else null); if no allowed intent exists, the service returns <code>500 {{"error": "invalid_model_output"}}</code>. Valid responses carry
 <code>X-Model-Version</code> and <code>X-Served-By</code> (Pod name from the downward API). With <code>FAULT_INJECT=1</code> the output is replaced by <code>not json</code>
-before checking and the service returns exactly that 500 body {MEAS}. The image (<code>python:3.11-slim</code>, CPU-only PyTorch wheel, every dependency pinned in
+before checking and the service returns exactly that 500 body. The image (<code>python:3.11-slim</code>, CPU-only PyTorch wheel, every dependency pinned in
 <code>service/requirements.txt</code>, <code>pip install --no-deps</code>) contains no weights ({t3_weights} weight files found) and is
-{img_bytes/1e9:.2f} GB {MEAS}; it builds from a fresh clone with <code>make images</code> or <code>docker build -f service/Dockerfile .</code>.</p>
-<p><b>Running under limits</b> (<code>docker run --cpus=1 --memory=1g --memory-swap=1g</code>, 50 sequential requests, <code>results/task3_container.log</code>) {MEAS}:
+{img_bytes/1e9:.2f} GB; it builds from a fresh clone with <code>make images</code> or <code>docker build -f service/Dockerfile .</code>.</p>
+<p><b>Running under limits</b> (<code>docker run --cpus=1 --memory=1g --memory-swap=1g</code>, 50 sequential requests, <code>results/task3_container.log</code>):
 status codes {t3_codes}; median latency {t3_lat[0]} ms, max {t3_lat[1]} ms; <b>peak memory {t3_peak[1]} MiB</b> (cgroup <code>memory.peak</code>, includes page cache of the
 282 MB weight download); OOMKilled = {t3_oom}. Before the salvage step was added, the same test gave 49 &times; 200 and 1 &times; 500
 (<code>results/before_salvage/task3_container.log</code>).</p>
@@ -233,21 +232,21 @@ Service, a Traefik Ingress routing <code>/parse</code>, and an HPA (min 1, max 2
 All evidence is in <code>results/task4_all.log</code> and the files named below; each test was driven by <code>scripts/task4_k8s.sh</code>, with the standard Locust
 settings (4 users) against the Ingress.</p>
 <ul>
-<li><b>Readiness gating</b> {MEAS}: during cold starts the Service had <i>no</i> ready endpoints until <code>/readyz</code> turned 200 (<code>ready-endpoints=[]</code> lines in the log).</li>
-<li><b>Cold start</b> {MEAS}: Pod creation &rarr; Ready over three runs (all pods deleted each time): {cold_runs} s, <b>median {cold_med} s</b>. The logs show the download from object storage,
+<li><b>Readiness gating</b>: during cold starts the Service had <i>no</i> ready endpoints until <code>/readyz</code> turned 200 (<code>ready-endpoints=[]</code> lines in the log).</li>
+<li><b>Cold start</b>: Pod creation &rarr; Ready over three runs (all pods deleted each time): {cold_runs} s, <b>median {cold_med} s</b>. The logs show the download from object storage,
 e.g. <code>{cold_log[0].split(' INFO ')[-1][:95]}</code> and <code>{[l for l in cold_log if 'complete' in l][0].split(' INFO ')[-1]}</code>.</li>
-<li><b>HPA</b> {MEAS}: replica count over the test {" &rarr; ".join(map(str, hpa_path))}; utilisation peaked at {hpa_max_cpu} of the request and fell to 0% after the load
+<li><b>HPA</b>: replica count over the test {" &rarr; ".join(map(str, hpa_path))}; utilisation peaked at {hpa_max_cpu} of the request and fell to 0% after the load
 (<code>hpa_watch.txt</code>, <code>hpa_events.txt</code>).</li>
-<li><b>Rolling update</b> {MEAS}: under load, <code>MODEL_URI</code>/<code>MODEL_VERSION</code> were changed v1&rarr;v2 (headers during: {", ".join(during_versions)}), then
+<li><b>Rolling update</b>: under load, <code>MODEL_URI</code>/<code>MODEL_VERSION</code> were changed v1&rarr;v2 (headers during: {", ".join(during_versions)}), then
 <code>kubectl rollout undo</code>; after rollback the headers show {", ".join(rb_versions)}.</li>
-<li><b>Recovery</b> {MEAS}: one Pod was deleted under load; the Deployment went back to 2/2 ready (<code>task4_all.log</code>).</li>
-<li><b>Load balancing</b> {MEAS}: with exactly two Ready replicas (HPA <code>minReplicas</code> temporarily 2) each replica served the share shown below.</li>
+<li><b>Recovery</b>: one Pod was deleted under load; the Deployment went back to 2/2 ready (<code>task4_all.log</code>).</li>
+<li><b>Load balancing</b>: with exactly two Ready replicas (HPA <code>minReplicas</code> temporarily 2) each replica served the share shown below.</li>
 </ul>
 <table><tr><th>Run (2-6 min, 4 users)</th><th>Requests</th><th>Failed</th><th>Error rate</th><th>p50 ms</th><th>p95 ms</th><th>req/s</th><th>Model versions</th><th>Share per replica</th></tr>
 {ltrow("HPA scale test", hload)}{ltrow("Load balancing (2 replicas)", lb)}{ltrow("Rolling update v1&rarr;v2&rarr;undo", roll)}{ltrow("Recovery (pod deleted)", rec)}
 <tr><td colspan="9" class="small">Same tests before the salvage step (results/before_salvage/): error rates {", ".join(f"{k} {v['error_rate_pct']:.2f}%" for k, v in before.items())}.
 These failures were all <code>500 invalid_model_output</code> for the two validation commands on which the model loops (Locust cycles through the 100 validation commands,
-so 2% of requests hit them); the infrastructure itself caused no failures in either set of runs.</td></tr></table>
+so 2% of requests hit them); the infrastructure itself caused no failures in either set of runs. The 0% error rates above therefore depend on the salvage step; with strict parsing alone they would be about 2%.</td></tr></table>
 <p><b>Limitations.</b> This is a <b>single-node cluster on one laptop</b>: it demonstrates Pod-level recovery, not fault tolerance across machines (losing the laptop
 loses everything, including SeaweedFS, which is a single replica on a local-path volume). HPA max 2 &times; 1 CPU limit and the host's other load bound throughput; metrics-server
 reports with a ~15-60 s delay, so scale-up lags the load. {ASSUME} Behaviour on a multi-node cloud cluster would differ (image pulls, network latency).</p>
@@ -259,7 +258,7 @@ reports with a ~15-60 s delay, so scale-up lags the load. {ASSUME} Behaviour on 
 <p><b>NACL of the public subnet</b> (<code>network/nacl.json</code>). Inbound: 50 deny all from 198.51.100.0/24; 100/110 allow TCP 80/443 from 0.0.0.0/0; 120 allow TCP 22 from
 management 10.20.5.128/27; 130 allow TCP 1024-65535 from app 10.20.0.0/22 (replies from the app's port 8000 to the load balancer's ephemeral ports); everything else
 falls to the default deny. Outbound: 100 allow TCP 8000 to 10.20.0.0/22; 110 allow TCP 1024-65535 to 0.0.0.0/0 (replies to clients' ephemeral ports).
-<code>nacl_sim.py --check</code> on <code>packets_sample.jsonl</code>: <b>{re.search(r"Correct: (.*)", nacl).group(1)}</b> {MEAS}.</p>
+<code>nacl_sim.py --check</code> on <code>packets_sample.jsonl</code>: <b>{re.search(r"Correct: (.*)", nacl).group(1)}</b>.</p>
 <p><b>Why replies need their own rules.</b> A NACL is <i>stateless</i>: it does not remember that it allowed a request, so the reply packet is checked again on its own,
 against the rules of its direction. A client's request to port 443 is allowed inbound, but the answer travels outbound to the client's ephemeral port (1024-65535), and the
 app's answer to the load balancer arrives inbound on the balancer's ephemeral port; without rules 110 (outbound) and 130 (inbound) those replies would hit the default deny.
@@ -273,8 +272,8 @@ cluster, secrets, SeaweedFS, buckets and dataset, builds and imports both images
 Docker, k3d, kubectl and gh. <b>CI</b> (<code>.github/workflows/ci.yml</code>), stages in order: lint (ruff) &rarr; unit tests (16 pytest tests: schema validation, salvage,
 cleaning rules (a)-(e) and count identity, sharding coverage, API headers/FAULT_INJECT/readiness, NACL) &rarr; evaluation (downloads the model from the GitHub Release,
 verifies its checksum, runs <code>predict.py</code> + <code>score.py</code> on validation) &rarr; quality gate (<code>score.py --min-validity 95</code>), plus a gitleaks secret scan
-(reports no leaks) {MEAS}.</p>
-<p><b>The gate doing its job</b> {MEAS}: run with the deliberately bad model (untrained Pythia-70M) fails at the quality gate with
+(reports no leaks).</p>
+<p><b>Quality gate check</b>: run with the deliberately bad model (untrained Pythia-70M) fails at the quality gate with
 <code>QUALITY GATE FAILED: json_validity 0.0 &lt; 95.0</code>: <a href="{ci_fail}">{ci_fail}</a>. The same workflow with <code>model-v1</code> passes all stages:
 <a href="{ci_pass}">{ci_pass}</a>. AI use is documented in <code>AI_USE.md</code>.</p>
 <p><b>Limitations / improvements.</b> CI does not start a cluster; an end-to-end job (k3d inside the runner, Locust smoke test) would catch manifest regressions.
@@ -282,17 +281,17 @@ Images are built locally and imported, not pushed to a registry.</p>
 
 <h2>Task 7: Performance, cost and review</h2>
 <p><b>Standard load test</b> (<code>locust ... --users 4 --spawn-rate 4 --run-time 2m</code> against the Ingress; <code>results/loadtest_stats.csv</code>,
-<code>loadtest_headers.json</code>, <code>loadtest_locust.log</code>) {MEAS}: <b>p50 {lt['p50_ms']:.0f} ms, p95 {lt['p95_ms']:.0f} ms</b>, throughput <b>{lt['rps']:.2f} req/s</b>,
+<code>loadtest_headers.json</code>, <code>loadtest_locust.log</code>): <b>p50 {lt['p50_ms']:.0f} ms, p95 {lt['p95_ms']:.0f} ms</b>, throughput <b>{lt['rps']:.2f} req/s</b>,
 <b>{lt['requests']} requests, {lt['failures']} failed (error rate {lt['error_rate_pct']:.2f}%)</b>; share per replica:
 {", ".join(f"{k}: {v:.1f}%" for k, v in lt.get('replica_share_pct', {}).items())}.
 Pod resources during the run (<code>kubectl top pods</code> every 10 s, <code>task7_top.txt</code>):
 {"; ".join(f"{n}: CPU {min(d['cpu'])}-{max(d['cpu'])}m, memory {min(d['mem'])}-{max(d['mem'])} MiB" for n, d in pod_cpu.items())}.
 Cold-start median (Task 4): {cold_med} s.</p>
-<p><b>Cost</b> (<code>data/rate_card.json</code>: INR 3.50 per vCPU-hour, INR 0.45 per GiB-hour; each replica billed for its limits) {MEAS} for throughput, {ASSUME} that the
+<p><b>Cost</b> (<code>data/rate_card.json</code>: INR 3.50 per vCPU-hour, INR 0.45 per GiB-hour; each replica billed for its limits) for throughput, {ASSUME} that the
 replicas observed in the run are the replicas running:</p>
 <pre>{cost_txt}</pre>
 <p><b>SLO.</b> Target: <b>99% of /parse requests succeed</b> (HTTP 200 within 30 s), window: one standard load-test run (2 min). Error budget = 1% &times; {lt['requests']} requests =
-<b>{budget:.2f} requests</b>; used {used} failed request(s) = {100 * used / budget if budget else 0:.0f}% of the budget {MEAS}.</p>
+<b>{budget:.2f} requests</b>; used {used} failed request(s) = {100 * used / budget if budget else 0:.0f}% of the budget.</p>
 <table><tr><th>Component</th><th>Evidence (measured)</th><th>Limitation found</th><th>Improvement</th></tr>
 <tr><td>Data and storage</td><td>{counts['input']} teacher replies &rarr; {counts['kept']} kept; {counts['d_slot_not_in_command']} rejected by rule (d); checksum reproduced</td>
 <td>SeaweedFS is one replica on a node-local volume; teacher reachable only through a tunnel</td><td>Replicated SeaweedFS (3 volume servers) or managed S3; teacher inside the cluster</td></tr>

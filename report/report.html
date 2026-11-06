@@ -14,8 +14,8 @@ code, pre { font-family: 'DejaVu Sans Mono', monospace; font-size: 7.8pt; } pre 
 <h1>Knowledge Distillation and Deployment of a Lightweight Command-Parsing Model on a Local Cloud</h1>
 <p class="meta">Cloud Computing (CS3081) mini project &middot; <b>Arunendra Tripathi</b>, Roll No. <b>230103016</b>, IIIT Manipur &middot;
 Repository: <a href="https://github.com/Arunendra21/kd-command-parser">https://github.com/Arunendra21/kd-command-parser</a> (commit tagged <code>final</code>) &middot; Model releases: <a href="https://github.com/Arunendra21/kd-command-parser/releases">https://github.com/Arunendra21/kd-command-parser/releases</a></p>
-<p class="small">Labels: <span class="tag m">Measured</span> = a number read from a file in <code>results/</code> (the builder <code>report/build_report.py</code> fills every one of them);
-<span class="tag a">Assumption</span> = a stated assumption, not a measurement.</p>
+<p class="small">All numbers in this report come from the runs described below and can be checked in the files under <code>results/</code>
+(the PDF is generated from those files by <code>report/build_report.py</code>). Anything that was not measured is marked <i>(assumption)</i>.</p>
 
 <h2>0. System overview</h2>
 <p>The teacher <b>phi3.5</b> (Phi-3.5-mini-instruct, 3.8B, Ollama, temperature 0, seed 42) labels 3,000 SLURP commands with a four-key JSON frame.
@@ -39,16 +39,16 @@ satisfies <i>n</i> mod <code>SHARD_COUNT</code> = <code>SHARD_INDEX</code>. The 
 <code>completions = parallelism = 3</code>; each pod's <code>SHARD_INDEX</code> is its completion index (downward API), so the three shards are disjoint and together
 cover every line. Modulo (rather than contiguous blocks) balances the load even if the file is sorted, and needs no knowledge of the file length.
 Each worker writes its own object <code>datasets/teacher/shard-&lt;i&gt;.jsonl</code> and checkpoints every 25 records, so a restarted pod resumes instead of
-starting over (useful because the teacher sits behind a tunnel). <code>scripts/check_shards.py</code> confirmed <span class="tag m">Measured</span> 3 &times; 1,000 records,
-3,000 unique ids, 0 missing, 0 repeated. Wall time <span class="tag m">Measured</span>: about 26 min for 3,000 commands (3 workers, ~1.5 s per request each).</p>
+starting over (useful because the teacher sits behind a tunnel). <code>scripts/check_shards.py</code> confirmed 3 &times; 1,000 records,
+3,000 unique ids, 0 missing, 0 repeated. Wall time: about 26 min for 3,000 commands (3 workers, ~1.5 s per request each).</p>
 <p><b>Cleaning.</b> <code>worker/clean.py</code> reads all shards, sorts by id and applies rules (a)-(d) in order (a record is counted under the first rule it breaks),
 then removes duplicate commands among the survivors (text lower-cased and whitespace-normalised; smallest id kept). Slot rule (d) accepts null or a
 non-empty string that occurs in the command (case/whitespace-insensitive). Each kept line stores the teacher's reply unchanged (<code>teacher_raw</code>)
 plus the same frame re-serialised on one line (<code>target</code>), which is the training target. Re-running <code>clean.py</code> on the committed shard files
-reproduces the checksum in <code>train.sha256</code>: <code>d80d7e7bc4073d80&hellip;</code> <span class="tag m">Measured</span>.</p>
+reproduces the checksum in <code>train.sha256</code>: <code>d80d7e7bc4073d80&hellip;</code>.</p>
 <table><tr><th>Input</th><th>(a) not JSON</th><th>(b) wrong keys</th><th>(c) bad intent</th><th>(d) slot not in command</th><th>Duplicates</th><th>Kept</th><th>Check</th></tr>
 <tr><td>3000</td><td>0</td><td>1</td><td>3</td><td>139</td>
-<td>46</td><td>2811</td><td>0+1+3+139+46+2811 = 3000 <span class="tag m">Measured</span></td></tr></table>
+<td>46</td><td>2811</td><td>0+1+3+139+46+2811 = 3000</td></tr></table>
 <p><b>Limitations / improvements.</b> (d) is the main loss (139 records): the teacher sometimes normalises values (e.g. "7 am" for
 "seven am") despite the prompt. A teacher on a remote GPU through a tunnel is a single point of failure (mitigated by checkpoints and retries).
 Improvement: run Ollama in the cluster on a GPU node, and add a few-shot block with more normalisation counter-examples.</p>
@@ -61,8 +61,8 @@ The seed is fixed in code (Python, NumPy, PyTorch, data-loader generator). <code
 v2 = the same settings with one more epoch (<code>training/config_v2.yaml</code>). <code>training/publish.py</code> writes <code>model.sha256</code> and uploads model,
 tokenizer, <code>version.json</code> and checksums to <code>s3://models/v1/</code> and <code>v2/</code>; the same files are the assets of GitHub Releases
 <code>model-v1</code> and <code>model-v2</code>. The downloaded Release <code>model.safetensors</code> matches <code>models/v1/model.sha256</code>
-(<code>3fdebaf0da34c011&hellip;</code>; <code>results/release_v1_checksum_verify.txt</code>) <span class="tag m">Measured</span>.</p>
-<p><b>Loss per epoch</b> <span class="tag m">Measured</span> v1: 0.589, 0.368, 0.188, 0.105, 0.080, 0.058, 0.034, 0.022, 0.012, 0.003 &nbsp;|&nbsp; v2: 0.551, 0.342, 0.176, 0.114, 0.090, 0.063, 0.040, 0.027, 0.018, 0.006, 0.002.
+(<code>3fdebaf0da34c011&hellip;</code>; <code>results/release_v1_checksum_verify.txt</code>).</p>
+<p><b>Loss per epoch</b> v1: 0.589, 0.368, 0.188, 0.105, 0.080, 0.058, 0.034, 0.022, 0.012, 0.003 &nbsp;|&nbsp; v2: 0.551, 0.342, 0.176, 0.114, 0.090, 0.063, 0.040, 0.027, 0.018, 0.006, 0.002.
 Training time v1 33 min, v2 32 min on 4 CPU cores.</p>
 <table><tr><th>Model (validation.jsonl, 100 commands)</th><th>JSON valid</th><th>Intent</th><th>Date</th><th>Time</th><th>Place</th><th>Full frame</th><th>Note</th></tr>
 <tr><td>Teacher phi3.5 (same prompt/settings)</td><td>100</td><td>83</td><td>75</td><td>88</td><td>89</td><td>46</td><td>results/teacher_validation.json</td></tr>
@@ -72,17 +72,17 @@ Training time v1 33 min, v2 32 min on 4 CPU cores.</p>
 <tr><td>Student v2, raw output (strict)</td><td>100</td><td>80</td><td>79</td><td>91</td><td>85</td><td>48</td><td>student_v2_validation.json</td></tr>
 <tr><td>Student v2, as served</td><td>100</td><td>80</td><td>79</td><td>91</td><td>85</td><td>48</td><td></td></tr>
 </table>
-<p>All numbers <span class="tag m">Measured</span>. <b>What changed.</b> The untrained model continues the text with unrelated prose or a lone "{"; it never produces the format (0% everywhere).
-After distillation the student reproduces the frame format almost perfectly and copies slot phrases from the command. Its full-frame score
-(52%) is close to, here even slightly above, the teacher's (46%): it learned the teacher's behaviour, including its
-labelling conventions, and on 100 examples a few points are within noise. The student cannot be better than the teacher in general; the gap to the gold labels
-(intent 83%) is inherited from the teacher (83%).</p>
+<p>All numbers. <b>What changed.</b> The untrained model continues the text with unrelated prose or a lone "{"; it never produces the format (0% everywhere).
+After distillation the student gets the frame format right on 98 of 100 inputs and copies slot phrases from the command. Its full-frame score
+(52%) came out a little above the teacher's (46%). With only 100 validation commands a gap of six points is a handful of
+commands, so this should not be read as the student being better; it mostly copied the teacher's labelling habits. The intent accuracy is the same for both
+(83% and 83%), which fits that reading.</p>
 <p><b>Sequence-level vs. logit-based distillation.</b> (a) <i>Sequence-level KD</i> (Kim &amp; Rush, 2016) trains the student with ordinary cross-entropy on the
 teacher's <i>generated output sequence</i>, i.e. the teacher's single best answer is the hard target. (b) <i>Logit-based (token-level) KD</i> trains the student to match the
 teacher's full <i>probability distribution over the vocabulary at every position</i> (e.g. KL divergence between softened teacher and student logits), which also
 transfers how confident the teacher was in the alternatives. (c) It is not possible here because the teacher is used only through Ollama's generate API, which returns text,
 not per-token distributions; moreover phi3.5 and Pythia use different tokenizers/vocabularies, so their distributions are not position-by-position comparable without
-an alignment step. (d) A real limitation of this approach: the student learns only the teacher's top-1 answer, including the teacher's mistakes (e.g. the 139
+an alignment step. (d) One real limitation: the student learns only the teacher's top-1 answer, including the teacher's mistakes (e.g. the 139
 normalised slots that were filtered out show the teacher's systematic errors; the ones that pass the filter are learned as truth), and nothing about uncertainty; a 70M
 model also falls into repetition loops on a few inputs (2/100 on validation in strict mode).</p>
 
@@ -95,10 +95,10 @@ cuts the text at the first newline/closing brace and checks it against <code>sch
 If that strict check fails, a deterministic <b>salvage</b> step takes the first allowed intent and the first value of each slot <i>from the model's own text</i>, keeping a slot only if it
 occurs in the command (else null); if no allowed intent exists, the service returns <code>500 {"error": "invalid_model_output"}</code>. Valid responses carry
 <code>X-Model-Version</code> and <code>X-Served-By</code> (Pod name from the downward API). With <code>FAULT_INJECT=1</code> the output is replaced by <code>not json</code>
-before checking and the service returns exactly that 500 body <span class="tag m">Measured</span>. The image (<code>python:3.11-slim</code>, CPU-only PyTorch wheel, every dependency pinned in
+before checking and the service returns exactly that 500 body. The image (<code>python:3.11-slim</code>, CPU-only PyTorch wheel, every dependency pinned in
 <code>service/requirements.txt</code>, <code>pip install --no-deps</code>) contains no weights (0 weight files found) and is
-1.69 GB <span class="tag m">Measured</span>; it builds from a fresh clone with <code>make images</code> or <code>docker build -f service/Dockerfile .</code>.</p>
-<p><b>Running under limits</b> (<code>docker run --cpus=1 --memory=1g --memory-swap=1g</code>, 50 sequential requests, <code>results/task3_container.log</code>) <span class="tag m">Measured</span>:
+1.69 GB; it builds from a fresh clone with <code>make images</code> or <code>docker build -f service/Dockerfile .</code>.</p>
+<p><b>Running under limits</b> (<code>docker run --cpus=1 --memory=1g --memory-swap=1g</code>, 50 sequential requests, <code>results/task3_container.log</code>):
 status codes {200: 50}; median latency 390 ms, max 892 ms; <b>peak memory 816.5 MiB</b> (cgroup <code>memory.peak</code>, includes page cache of the
 282 MB weight download); OOMKilled = false. Before the salvage step was added, the same test gave 49 &times; 200 and 1 &times; 500
 (<code>results/before_salvage/task3_container.log</code>).</p>
@@ -112,24 +112,24 @@ Service, a Traefik Ingress routing <code>/parse</code>, and an HPA (min 1, max 2
 All evidence is in <code>results/task4_all.log</code> and the files named below; each test was driven by <code>scripts/task4_k8s.sh</code>, with the standard Locust
 settings (4 users) against the Ingress.</p>
 <ul>
-<li><b>Readiness gating</b> <span class="tag m">Measured</span>: during cold starts the Service had <i>no</i> ready endpoints until <code>/readyz</code> turned 200 (<code>ready-endpoints=[]</code> lines in the log).</li>
-<li><b>Cold start</b> <span class="tag m">Measured</span>: Pod creation &rarr; Ready over three runs (all pods deleted each time): 6, 4, 5 s, <b>median 5 s</b>. The logs show the download from object storage,
+<li><b>Readiness gating</b>: during cold starts the Service had <i>no</i> ready endpoints until <code>/readyz</code> turned 200 (<code>ready-endpoints=[]</code> lines in the log).</li>
+<li><b>Cold start</b>: Pod creation &rarr; Ready over three runs (all pods deleted each time): 6, 4, 5 s, <b>median 5 s</b>. The logs show the download from object storage,
 e.g. <code>Downloading model from object storage: s3://models/v1 (endpoint http://seaweedfs-s3.data.svc.cl</code> and <code>Model download complete: 8 files in 1.4s</code>.</li>
-<li><b>HPA</b> <span class="tag m">Measured</span>: replica count over the test 1 &rarr; 2 &rarr; 1; utilisation peaked at 200%/70% of the request and fell to 0% after the load
+<li><b>HPA</b>: replica count over the test 1 &rarr; 2 &rarr; 1; utilisation peaked at 200%/70% of the request and fell to 0% after the load
 (<code>hpa_watch.txt</code>, <code>hpa_events.txt</code>).</li>
-<li><b>Rolling update</b> <span class="tag m">Measured</span>: under load, <code>MODEL_URI</code>/<code>MODEL_VERSION</code> were changed v1&rarr;v2 (headers during: v1, v2, v2, v1, v1, v1), then
+<li><b>Rolling update</b>: under load, <code>MODEL_URI</code>/<code>MODEL_VERSION</code> were changed v1&rarr;v2 (headers during: v1, v2, v2, v1, v1, v1), then
 <code>kubectl rollout undo</code>; after rollback the headers show v1, v1, v1.</li>
-<li><b>Recovery</b> <span class="tag m">Measured</span>: one Pod was deleted under load; the Deployment went back to 2/2 ready (<code>task4_all.log</code>).</li>
-<li><b>Load balancing</b> <span class="tag m">Measured</span>: with exactly two Ready replicas (HPA <code>minReplicas</code> temporarily 2) each replica served the share shown below.</li>
+<li><b>Recovery</b>: one Pod was deleted under load; the Deployment went back to 2/2 ready (<code>task4_all.log</code>).</li>
+<li><b>Load balancing</b>: with exactly two Ready replicas (HPA <code>minReplicas</code> temporarily 2) each replica served the share shown below.</li>
 </ul>
 <table><tr><th>Run (2-6 min, 4 users)</th><th>Requests</th><th>Failed</th><th>Error rate</th><th>p50 ms</th><th>p95 ms</th><th>req/s</th><th>Model versions</th><th>Share per replica</th></tr>
 <tr><td>HPA scale test</td><td>900</td><td>0</td><td>0.00%</td><td>1300</td><td>1700</td><td>3.77</td><td>v1: 902</td><td>55.3%, 44.7%</td></tr><tr><td>Load balancing (2 replicas)</td><td>497</td><td>0</td><td>0.00%</td><td>930</td><td>1400</td><td>4.18</td><td>v1: 501</td><td>49.9%, 50.1%</td></tr><tr><td>Rolling update v1&rarr;v2&rarr;undo</td><td>1463</td><td>0</td><td>0.00%</td><td>950</td><td>1400</td><td>4.07</td><td>v1: 1273, v2: 192</td><td>5.1%, 6.3%, 6.8%, 6.3%, 38.2%, 37.3%</td></tr><tr><td>Recovery (pod deleted)</td><td>723</td><td>0</td><td>0.00%</td><td>990</td><td>1600</td><td>4.04</td><td>v1: 725</td><td>8.7%, 50.9%, 40.4%</td></tr>
 <tr><td colspan="9" class="small">Same tests before the salvage step (results/before_salvage/): error rates hpa_load 1.96%, lb_test 2.00%, rolling 1.75%, recovery 2.03%.
 These failures were all <code>500 invalid_model_output</code> for the two validation commands on which the model loops (Locust cycles through the 100 validation commands,
-so 2% of requests hit them); the infrastructure itself caused no failures in either set of runs.</td></tr></table>
+so 2% of requests hit them); the infrastructure itself caused no failures in either set of runs. The 0% error rates above therefore depend on the salvage step; with strict parsing alone they would be about 2%.</td></tr></table>
 <p><b>Limitations.</b> This is a <b>single-node cluster on one laptop</b>: it demonstrates Pod-level recovery, not fault tolerance across machines (losing the laptop
 loses everything, including SeaweedFS, which is a single replica on a local-path volume). HPA max 2 &times; 1 CPU limit and the host's other load bound throughput; metrics-server
-reports with a ~15-60 s delay, so scale-up lags the load. <span class="tag a">Assumption</span> Behaviour on a multi-node cloud cluster would differ (image pulls, network latency).</p>
+reports with a ~15-60 s delay, so scale-up lags the load. <i>(assumption)</i> Behaviour on a multi-node cloud cluster would differ (image pulls, network latency).</p>
 
 <h2>Task 5: Subnetting and network access control</h2>
 <p>Allocation from 10.20.0.0, largest first, each block right after the previous one, smallest prefix with 2<sup>32&minus;p</sup>&minus;2 &ge; hosts (working in <code>network/subnets.md</code>):</p>
@@ -138,7 +138,7 @@ reports with a ~15-60 s delay, so scale-up lags the load. <span class="tag a">As
 <p><b>NACL of the public subnet</b> (<code>network/nacl.json</code>). Inbound: 50 deny all from 198.51.100.0/24; 100/110 allow TCP 80/443 from 0.0.0.0/0; 120 allow TCP 22 from
 management 10.20.5.128/27; 130 allow TCP 1024-65535 from app 10.20.0.0/22 (replies from the app's port 8000 to the load balancer's ephemeral ports); everything else
 falls to the default deny. Outbound: 100 allow TCP 8000 to 10.20.0.0/22; 110 allow TCP 1024-65535 to 0.0.0.0/0 (replies to clients' ephemeral ports).
-<code>nacl_sim.py --check</code> on <code>packets_sample.jsonl</code>: <b>6 / 6 = 100.0%</b> <span class="tag m">Measured</span>.</p>
+<code>nacl_sim.py --check</code> on <code>packets_sample.jsonl</code>: <b>6 / 6 = 100.0%</b>.</p>
 <p><b>Why replies need their own rules.</b> A NACL is <i>stateless</i>: it does not remember that it allowed a request, so the reply packet is checked again on its own,
 against the rules of its direction. A client's request to port 443 is allowed inbound, but the answer travels outbound to the client's ephemeral port (1024-65535), and the
 app's answer to the load balancer arrives inbound on the balancer's ephemeral port; without rules 110 (outbound) and 130 (inbound) those replies would hit the default deny.
@@ -152,8 +152,8 @@ cluster, secrets, SeaweedFS, buckets and dataset, builds and imports both images
 Docker, k3d, kubectl and gh. <b>CI</b> (<code>.github/workflows/ci.yml</code>), stages in order: lint (ruff) &rarr; unit tests (16 pytest tests: schema validation, salvage,
 cleaning rules (a)-(e) and count identity, sharding coverage, API headers/FAULT_INJECT/readiness, NACL) &rarr; evaluation (downloads the model from the GitHub Release,
 verifies its checksum, runs <code>predict.py</code> + <code>score.py</code> on validation) &rarr; quality gate (<code>score.py --min-validity 95</code>), plus a gitleaks secret scan
-(reports no leaks) <span class="tag m">Measured</span>.</p>
-<p><b>The gate doing its job</b> <span class="tag m">Measured</span>: run with the deliberately bad model (untrained Pythia-70M) fails at the quality gate with
+(reports no leaks).</p>
+<p><b>Quality gate check</b>: run with the deliberately bad model (untrained Pythia-70M) fails at the quality gate with
 <code>QUALITY GATE FAILED: json_validity 0.0 &lt; 95.0</code>: <a href="https://github.com/Arunendra21/kd-command-parser/actions/runs/42193836249">https://github.com/Arunendra21/kd-command-parser/actions/runs/42193836249</a>. The same workflow with <code>model-v1</code> passes all stages:
 <a href="https://github.com/Arunendra21/kd-command-parser/actions/runs/42193828050">https://github.com/Arunendra21/kd-command-parser/actions/runs/42193828050</a>. AI use is documented in <code>AI_USE.md</code>.</p>
 <p><b>Limitations / improvements.</b> CI does not start a cluster; an end-to-end job (k3d inside the runner, Locust smoke test) would catch manifest regressions.
@@ -161,13 +161,13 @@ Images are built locally and imported, not pushed to a registry.</p>
 
 <h2>Task 7: Performance, cost and review</h2>
 <p><b>Standard load test</b> (<code>locust ... --users 4 --spawn-rate 4 --run-time 2m</code> against the Ingress; <code>results/loadtest_stats.csv</code>,
-<code>loadtest_headers.json</code>, <code>loadtest_locust.log</code>) <span class="tag m">Measured</span>: <b>p50 960 ms, p95 1400 ms</b>, throughput <b>4.07 req/s</b>,
+<code>loadtest_headers.json</code>, <code>loadtest_locust.log</code>): <b>p50 960 ms, p95 1400 ms</b>, throughput <b>4.07 req/s</b>,
 <b>485 requests, 0 failed (error rate 0.00%)</b>; share per replica:
 kd-service-6797f8b74-cg8ns: 49.8%, kd-service-6797f8b74-25mgd: 50.2%.
 Pod resources during the run (<code>kubectl top pods</code> every 10 s, <code>task7_top.txt</code>):
 kd-service-6797f8b74-25mgd: CPU 358-1000m, memory 362-384 MiB; kd-service-6797f8b74-cg8ns: CPU 103-1000m, memory 400-439 MiB.
 Cold-start median (Task 4): 5 s.</p>
-<p><b>Cost</b> (<code>data/rate_card.json</code>: INR 3.50 per vCPU-hour, INR 0.45 per GiB-hour; each replica billed for its limits) <span class="tag m">Measured</span> for throughput, <span class="tag a">Assumption</span> that the
+<p><b>Cost</b> (<code>data/rate_card.json</code>: INR 3.50 per vCPU-hour, INR 0.45 per GiB-hour; each replica billed for its limits) for throughput, <i>(assumption)</i> that the
 replicas observed in the run are the replicas running:</p>
 <pre>replicas=2  cpu_limit=1.0 vCPU  mem_limit=1.0 GiB
 per replica: 1.0 x 3.5 + 1.0 x 0.45 = 3.9500 INR/h
@@ -175,7 +175,7 @@ all replicas: 2 x 3.9500 = 7.9000 INR/h
 requests/hour: 4.074 rps x 3600 = 14666.4
 cost per 1000 requests = 7.9000 / 14666.4 x 1000 = 0.5386 INR</pre>
 <p><b>SLO.</b> Target: <b>99% of /parse requests succeed</b> (HTTP 200 within 30 s), window: one standard load-test run (2 min). Error budget = 1% &times; 485 requests =
-<b>4.85 requests</b>; used 0 failed request(s) = 0% of the budget <span class="tag m">Measured</span>.</p>
+<b>4.85 requests</b>; used 0 failed request(s) = 0% of the budget.</p>
 <table><tr><th>Component</th><th>Evidence (measured)</th><th>Limitation found</th><th>Improvement</th></tr>
 <tr><td>Data and storage</td><td>3000 teacher replies &rarr; 2811 kept; 139 rejected by rule (d); checksum reproduced</td>
 <td>SeaweedFS is one replica on a node-local volume; teacher reachable only through a tunnel</td><td>Replicated SeaweedFS (3 volume servers) or managed S3; teacher inside the cluster</td></tr>
