@@ -1,0 +1,74 @@
+There was a problem when trying to write in your cache folder (/home/app/.cache/huggingface/hub). You should set the environment variable TRANSFORMERS_CACHE to a writable directory.
+INFO:     Started server process [1]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2026-11-06 09:44:17,785 INFO Found credentials in environment variables.
+2026-11-06 09:44:17,870 INFO Downloading model from object storage: s3://models/v1 (endpoint http://host.docker.internal:8333)
+2026-11-06 09:44:17,893 INFO   downloaded s3://models/v1/config.json (799 bytes)
+2026-11-06 09:44:17,899 INFO   downloaded s3://models/v1/generation_config.json (111 bytes)
+INFO:     172.17.0.1:44720 - "GET /readyz HTTP/1.1" 503 Service Unavailable
+INFO:     172.17.0.1:44728 - "GET /readyz HTTP/1.1" 503 Service Unavailable
+2026-11-06 09:44:19,133 INFO   downloaded s3://models/v1/model.safetensors (281715176 bytes)
+2026-11-06 09:44:19,137 INFO   downloaded s3://models/v1/model.sha256 (589 bytes)
+2026-11-06 09:44:19,142 INFO   downloaded s3://models/v1/special_tokens_map.json (473 bytes)
+2026-11-06 09:44:19,159 INFO   downloaded s3://models/v1/tokenizer.json (3564303 bytes)
+2026-11-06 09:44:19,163 INFO   downloaded s3://models/v1/tokenizer_config.json (4846 bytes)
+2026-11-06 09:44:19,168 INFO   downloaded s3://models/v1/version.json (354 bytes)
+2026-11-06 09:44:19,168 INFO Model download complete: 8 files in 1.3s
+2026-11-06 09:44:19,723 INFO Model v1 loaded; ready
+INFO:     172.17.0.1:44734 - "GET /readyz HTTP/1.1" 200 OK
+INFO:     172.17.0.1:44736 - "GET /healthz HTTP/1.1" 200 OK
+INFO:     172.17.0.1:44740 - "GET /readyz HTTP/1.1" 200 OK
+INFO:     172.17.0.1:44750 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:44764 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:44776 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:44780 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:44782 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:44792 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:44808 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:44812 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:44822 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:55474 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:55476 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:55486 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:55494 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:55500 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:55506 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:55516 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:55528 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:55542 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:55556 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:55572 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:55588 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:55592 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:55604 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:55616 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:55628 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:55632 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:55648 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:55664 - "POST /parse HTTP/1.1" 200 OK
+2026-11-06 09:44:32,389 WARNING salvaged malformed model output for 'what is the weather at home': '{"intent": "weather_query", "date": null, "time": null, "place": "where I house house house house house house house house house house house house house house house house house house house house house house house house house house house house house house house house house house house house house house house house' -> {'intent': 'weather_query', 'date': None, 'time': None, 'place': None}
+INFO:     172.17.0.1:55674 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:55678 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:55690 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:55698 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:55710 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:52708 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:52710 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:52712 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:52720 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:52732 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:52746 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:52748 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:52758 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:52774 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:52778 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:52794 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:52802 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:52818 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:52826 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:52838 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:52852 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:52858 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:52870 - "POST /parse HTTP/1.1" 200 OK

@@ -1,0 +1,28 @@
+{
+  "requests": 1490,
+  "failures": 26,
+  "error_rate_pct": 1.745,
+  "p50_ms": 930.0,
+  "p95_ms": 1400.0,
+  "rps": 4.153,
+  "per_replica": {
+    "kd-service-54b854b6fb-qn9d2": 110,
+    "kd-service-54b854b6fb-bqbpc": 76,
+    "kd-service-df78cf6fb-nx2gf": 150,
+    "kd-service-df78cf6fb-rf5nt": 85,
+    "kd-service-54b854b6fb-k8p2j": 539,
+    "kd-service-54b854b6fb-pc2kv": 508
+  },
+  "per_model_version": {
+    "v1": 1233,
+    "v2": 235
+  },
+  "replica_share_pct": {
+    "kd-service-54b854b6fb-qn9d2": 7.5,
+    "kd-service-54b854b6fb-bqbpc": 5.2,
+    "kd-service-df78cf6fb-nx2gf": 10.2,
+    "kd-service-df78cf6fb-rf5nt": 5.8,
+    "kd-service-54b854b6fb-k8p2j": 36.7,
+    "kd-service-54b854b6fb-pc2kv": 34.6
+  }
+}

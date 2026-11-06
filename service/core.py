@@ -89,3 +89,43 @@ def validate(raw, keys=None, intents=None):
         if obj[k] is not None and not isinstance(obj[k], str):
             return None
     return {k: obj[k] for k in keys}
+
+
+def _norm(s):
+    return " ".join(s.lower().split())
+
+
+def salvage(raw, text, keys=None, intents=None):
+    """Recover a frame from a malformed model output, or return None.
+
+    Used only when strict parsing fails (e.g. the model loops or repeats a key).
+    Every value comes from the model's own text: the first "intent" that is one of
+    the allowed intents, and for each slot the first `"slot": null` or
+    `"slot": "value"`; a slot value is kept only if it occurs in the command,
+    otherwise the slot is null (never invented). No valid intent -> None.
+    """
+    import re
+
+    keys = keys or KEYS
+    intents = intents or INTENTS
+    m = re.search(r'"intent"\s*:\s*"([a-z_]+)"', raw or "")
+    if not m or m.group(1) not in intents:
+        return None
+    frame = {"intent": m.group(1)}
+    command = _norm(text)
+    for k in keys:
+        if k == "intent":
+            continue
+        v = re.search(r'"%s"\s*:\s*(null|"([^"\n]*)")' % re.escape(k), raw)
+        val = v.group(2) if v and v.group(2) is not None else None
+        frame[k] = val if val and _norm(val) in command else None
+    return {k: frame[k] for k in keys}
+
+
+def parse_output(raw, text, keys=None, intents=None):
+    """Strict schema validation first, then salvage. Returns (frame or None, how)."""
+    frame = validate(raw, keys, intents)
+    if frame is not None:
+        return frame, "strict"
+    frame = salvage(raw, text, keys, intents)
+    return (frame, "salvaged") if frame is not None else (None, "invalid")

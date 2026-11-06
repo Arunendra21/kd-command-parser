@@ -1,0 +1,19 @@
+{
+  "requests": 917,
+  "failures": 18,
+  "error_rate_pct": 1.963,
+  "p50_ms": 1000.0,
+  "p95_ms": 1600.0,
+  "rps": 3.834,
+  "per_replica": {
+    "kd-service-54b854b6fb-znt4x": 487,
+    "kd-service-54b854b6fb-qn9d2": 414
+  },
+  "per_model_version": {
+    "v1": 901
+  },
+  "replica_share_pct": {
+    "kd-service-54b854b6fb-znt4x": 54.1,
+    "kd-service-54b854b6fb-qn9d2": 45.9
+  }
+}

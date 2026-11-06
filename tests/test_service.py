@@ -34,7 +34,7 @@ def test_fault_inject_gives_500(monkeypatch):
 
 
 def test_invalid_model_output_never_200(monkeypatch):
-    _, c = make_client(monkeypatch, output='{"intent": "weather_query", "date": nu')
+    _, c = make_client(monkeypatch, output='{"intent": "play_music", "date": nu')
     r = c.post("/parse", json={"text": "weather in london"})
     assert r.status_code == 500 and r.json() == {"error": "invalid_model_output"}
 
@@ -46,3 +46,10 @@ def test_readyz_503_until_loaded(monkeypatch):
     assert c.get("/readyz").status_code == 503
     app.state["model"] = object()
     assert c.get("/readyz").status_code == 200
+
+
+def test_malformed_but_salvageable_output_returns_clean_json(monkeypatch):
+    _, c = make_client(monkeypatch, output='{"intent": "weather_query", "date": null, "time": null, "place": "london house house')
+    r = c.post("/parse", json={"text": "weather in london"})
+    assert r.status_code == 200
+    assert r.json() == {"intent": "weather_query", "date": None, "time": None, "place": None}

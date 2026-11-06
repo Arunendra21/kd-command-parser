@@ -1,0 +1,21 @@
+2026-11-06 09:18:00,181 INFO Downloading model from object storage: s3://models/v1 (endpoint http://seaweedfs-s3.data.svc.cluster.local:8333)
+2026-11-06 09:18:00,199 INFO   downloaded s3://models/v1/config.json (799 bytes)
+2026-11-06 09:18:00,203 INFO   downloaded s3://models/v1/generation_config.json (111 bytes)
+2026-11-06 09:18:00,784 INFO   downloaded s3://models/v1/model.safetensors (281715176 bytes)
+2026-11-06 09:18:00,790 INFO   downloaded s3://models/v1/model.sha256 (589 bytes)
+2026-11-06 09:18:00,794 INFO   downloaded s3://models/v1/special_tokens_map.json (473 bytes)
+2026-11-06 09:18:00,810 INFO   downloaded s3://models/v1/tokenizer.json (3564303 bytes)
+2026-11-06 09:18:00,814 INFO   downloaded s3://models/v1/tokenizer_config.json (4846 bytes)
+2026-11-06 09:18:00,817 INFO   downloaded s3://models/v1/version.json (354 bytes)
+2026-11-06 09:18:00,817 INFO Model download complete: 8 files in 0.6s
+2026-11-06 09:18:01,202 INFO Model v1 loaded; ready
+INFO:     10.42.0.1:43962 - "GET /readyz HTTP/1.1" 200 OK
+INFO:     10.42.0.1:58802 - "GET /readyz HTTP/1.1" 200 OK
+INFO:     10.42.0.1:58816 - "GET /readyz HTTP/1.1" 200 OK
+INFO:     10.42.0.1:58820 - "GET /readyz HTTP/1.1" 200 OK
+INFO:     10.42.0.1:58840 - "GET /readyz HTTP/1.1" 200 OK
+INFO:     10.42.0.1:58846 - "GET /readyz HTTP/1.1" 200 OK
+INFO:     10.42.0.1:40746 - "GET /readyz HTTP/1.1" 200 OK
+INFO:     10.42.0.1:40754 - "GET /readyz HTTP/1.1" 200 OK
+INFO:     10.42.0.1:40764 - "GET /readyz HTTP/1.1" 200 OK
+INFO:     10.42.0.1:40780 - "GET /readyz HTTP/1.1" 200 OK

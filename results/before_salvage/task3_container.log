@@ -1,0 +1,72 @@
+
+===== [14:47:11] image size
+kd-service:1.0 1.69GB
+bytes: 1685613645
+
+===== [14:47:11] no model weights inside the image (search for *.safetensors / pytorch_model*.bin / model dirs)
+0
+total 8
+drwxr-xr-x 2 app  root 4096 Nov  6 06:39 .
+drwxrwxrwt 1 root root 4096 Nov  6 06:39 ..
+
+===== [14:47:11] start container with --cpus=1 --memory=1g --memory-swap=1g
+1d108848cdad0b0cd78e5cf5a5591738581e3d4028d365820ad1193083488654
+
+===== [14:47:12] /healthz and /readyz while loading
+healthz 000
+14:47:12 readyz 000
+14:47:13 readyz 000
+14:47:14 readyz 000
+14:47:15 readyz 503
+14:47:16 readyz 503
+14:47:17 readyz 200
+
+===== [14:47:17] headers
+HTTP/1.1 200 OK
+date: Fri, 06 Nov 2026 09:17:16 GMT
+server: uvicorn
+x-model-version: v1
+x-served-by: 1d108848cdad
+content-length: 18
+content-type: application/json
+
+{"status":"alive"}
+HTTP/1.1 200 OK
+date: Fri, 06 Nov 2026 09:17:16 GMT
+server: uvicorn
+x-model-version: v1
+x-served-by: 1d108848cdad
+content-length: 18
+content-type: application/json
+
+{"status":"ready"}
+HTTP/1.1 200 OK
+date: Fri, 06 Nov 2026 09:17:16 GMT
+server: uvicorn
+x-model-version: v1
+x-served-by: 1d108848cdad
+content-length: 78
+content-type: application/json
+
+{"intent":"alarm_set","date":"tomorrow","time":"seven thirty am","place":null}
+
+===== [14:47:18] 50 sequential requests
+status codes: {200: 49, 500: 1}  median latency 393 ms, max 950 ms
+
+===== [14:47:38] peak memory (cgroup memory.peak / max_usage) and OOM status
+peak bytes: 872853504 (832.4 MiB)
+OOMKilled=false Status=running RestartCount=0
+highest docker stats sample:
+14:47:36 kd-t3 101.19% 487.7MiB / 1GiB
+
+===== [14:47:38] FAULT_INJECT=1
+163cce26a26b79989c1239f18f905fec57de929c07209c6251f2f474d3157adb
+HTTP/1.1 500 Internal Server Error
+date: Fri, 06 Nov 2026 09:17:41 GMT
+server: uvicorn
+x-model-version: v1
+x-served-by: 163cce26a26b
+content-length: 32
+content-type: application/json
+
+{"error":"invalid_model_output"}

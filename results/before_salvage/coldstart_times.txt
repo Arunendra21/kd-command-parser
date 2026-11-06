@@ -1,0 +1,6 @@
+run1 kd-service-54b854b6fb-q82nv 6
+run1 kd-service-54b854b6fb-xgmhg 6
+run2 kd-service-54b854b6fb-7vcpq 6
+run2 kd-service-54b854b6fb-snb8v 6
+run3 kd-service-54b854b6fb-kpwkj 6
+run3 kd-service-54b854b6fb-znt4x 6

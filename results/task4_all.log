@@ -1,0 +1,64 @@
+
+===== [15:14:52] 4.1-4.4 objects, requests/limits, probes, HPA
+NAME                         READY   UP-TO-DATE   AVAILABLE   AGE    CONTAINERS   IMAGES           SELECTOR
+deployment.apps/kd-service   1/1     1            1           155m   kd-service   kd-service:1.0   app=kd-service
+
+NAME                                    DESIRED   CURRENT   READY   AGE    CONTAINERS   IMAGES           SELECTOR
+replicaset.apps/kd-service-54b854b6fb   0         0         0       27m    kd-service   kd-service:1.0   app=kd-service,pod-template-hash=54b854b6fb
+replicaset.apps/kd-service-6797f8b74    1         1         1       43s    kd-service   kd-service:1.0   app=kd-service,pod-template-hash=6797f8b74
+replicaset.apps/kd-service-75f6487ddd   0         0         0       155m   kd-service   kd-service:1.0   app=kd-service,pod-template-hash=75f6487ddd
+replicaset.apps/kd-service-85c559dfb    0         0         0       143m   kd-service   kd-service:1.0   app=kd-service,pod-template-hash=85c559dfb
+replicaset.apps/kd-service-df78cf6fb    0         0         0       16m    kd-service   kd-service:1.0   app=kd-service,pod-template-hash=df78cf6fb
+
+NAME                             READY   STATUS    RESTARTS   AGE   IP           NODE                   NOMINATED NODE   READINESS GATES
+pod/kd-service-6797f8b74-4rdvr   1/1     Running   0          43s   10.42.0.60   k3d-kdcloud-server-0   <none>           <none>
+
+NAME                 TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)   AGE    SELECTOR
+service/kd-service   ClusterIP   10.43.20.25   <none>        80/TCP    155m   app=kd-service
+
+NAME                   ENDPOINTS         AGE
+endpoints/kd-service   10.42.0.60:8000   155m
+
+NAME                                   CLASS     HOSTS   ADDRESS      PORTS   AGE
+ingress.networking.k8s.io/kd-service   traefik   *       172.22.0.2   80      155m
+
+NAME                                             REFERENCE               TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+horizontalpodautoscaler.autoscaling/kd-service   Deployment/kd-service   cpu: 0%/70%   1         2         1          155m
+{"limits":{"cpu":"1","memory":"1Gi"},"requests":{"cpu":"500m","memory":"512Mi"}}
+{"failureThreshold":1,"httpGet":{"path":"/readyz","port":8000,"scheme":"HTTP"},"periodSeconds":2,"successThreshold":1,"timeoutSeconds":2}
+{"failureThreshold":6,"httpGet":{"path":"/healthz","port":8000,"scheme":"HTTP"},"initialDelaySeconds":10,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":5}
+
+===== [15:14:52] /parse through the Ingress (http://localhost:28080)
+HTTP/1.1 200 OK
+Content-Length: 67
+Content-Type: application/json
+Date: Fri, 06 Nov 2026 09:44:51 GMT
+Server: uvicorn
+X-Model-Version: v1
+X-Served-By: kd-service-6797f8b74-4rdvr
+
+{"intent":"weather_query","date":null,"time":null,"place":"london"}
+
+===== [15:14:53] 4.7 cold start x3 (delete all pods; endpoints empty until model loaded)
+pod "kd-service-6797f8b74-4rdvr" deleted
+15:14:54 run1 ready-endpoints=[] pods: kd-service-6797f8b74-2lqkr:0/1:Running kd-service-6797f8b74-4rdvr:1/1:Terminating 
+15:14:55 run1 ready-endpoints=[] pods: kd-service-6797f8b74-2lqkr:0/1:Running kd-service-6797f8b74-4rdvr:1/1:Terminating 
+15:14:56 run1 ready-endpoints=[] pods: kd-service-6797f8b74-2lqkr:0/1:Running kd-service-6797f8b74-4rdvr:1/1:Terminating 
+15:14:57 run1 ready-endpoints=[] pods: kd-service-6797f8b74-2lqkr:0/1:Running kd-service-6797f8b74-4rdvr:1/1:Terminating 
+15:14:58 run1 ready-endpoints=[] pods: kd-service-6797f8b74-2lqkr:0/1:Running kd-service-6797f8b74-4rdvr:1/1:Terminating 
+15:14:59 run1 ready-endpoints=[10.42.0.61] pods: kd-service-6797f8b74-2lqkr:1/1:Running kd-service-6797f8b74-4rdvr:1/1:Terminating 
+run1 kd-service-6797f8b74-2lqkr 6
+--- logs pod/kd-service-6797f8b74-2lqkr (model download)
+2026-11-06 09:44:55,896 INFO Downloading model from object storage: s3://models/v1 (endpoint http://seaweedfs-s3.data.svc.cluster.local:8333)
+2026-11-06 09:44:55,916 INFO   downloaded s3://models/v1/config.json (799 bytes)
+2026-11-06 09:44:55,920 INFO   downloaded s3://models/v1/generation_config.json (111 bytes)
+2026-11-06 09:44:57,187 INFO   downloaded s3://models/v1/model.safetensors (281715176 bytes)
+2026-11-06 09:44:57,192 INFO   downloaded s3://models/v1/model.sha256 (589 bytes)
+2026-11-06 09:44:57,196 INFO   downloaded s3://models/v1/special_tokens_map.json (473 bytes)
+2026-11-06 09:44:57,244 INFO   downloaded s3://models/v1/tokenizer.json (3564303 bytes)
+2026-11-06 09:44:57,253 INFO   downloaded s3://models/v1/tokenizer_config.json (4846 bytes)
+2026-11-06 09:44:57,257 INFO   downloaded s3://models/v1/version.json (354 bytes)
+2026-11-06 09:44:57,257 INFO Model download complete: 8 files in 1.4s
+INFO:     10.42.0.1:43700 - "GET /readyz HTTP/1.1" 503 Service Unavailable
+2026-11-06 09:44:57,751 INFO Model v1 loaded; ready
+INFO:     10.42.0.1:43714 - "GET /readyz HTTP/1.1" 200 OK

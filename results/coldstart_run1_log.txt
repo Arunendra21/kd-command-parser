@@ -1,0 +1,13 @@
+2026-11-06 09:44:55,896 INFO Downloading model from object storage: s3://models/v1 (endpoint http://seaweedfs-s3.data.svc.cluster.local:8333)
+2026-11-06 09:44:55,916 INFO   downloaded s3://models/v1/config.json (799 bytes)
+2026-11-06 09:44:55,920 INFO   downloaded s3://models/v1/generation_config.json (111 bytes)
+2026-11-06 09:44:57,187 INFO   downloaded s3://models/v1/model.safetensors (281715176 bytes)
+2026-11-06 09:44:57,192 INFO   downloaded s3://models/v1/model.sha256 (589 bytes)
+2026-11-06 09:44:57,196 INFO   downloaded s3://models/v1/special_tokens_map.json (473 bytes)
+2026-11-06 09:44:57,244 INFO   downloaded s3://models/v1/tokenizer.json (3564303 bytes)
+2026-11-06 09:44:57,253 INFO   downloaded s3://models/v1/tokenizer_config.json (4846 bytes)
+2026-11-06 09:44:57,257 INFO   downloaded s3://models/v1/version.json (354 bytes)
+2026-11-06 09:44:57,257 INFO Model download complete: 8 files in 1.4s
+INFO:     10.42.0.1:43700 - "GET /readyz HTTP/1.1" 503 Service Unavailable
+2026-11-06 09:44:57,751 INFO Model v1 loaded; ready
+INFO:     10.42.0.1:43714 - "GET /readyz HTTP/1.1" 200 OK

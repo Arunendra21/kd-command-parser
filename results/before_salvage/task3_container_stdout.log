@@ -1,0 +1,74 @@
+There was a problem when trying to write in your cache folder (/home/app/.cache/huggingface/hub). You should set the environment variable TRANSFORMERS_CACHE to a writable directory.
+INFO:     Started server process [1]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2026-11-06 09:17:14,660 INFO Found credentials in environment variables.
+2026-11-06 09:17:14,734 INFO Downloading model from object storage: s3://models/v1 (endpoint http://host.docker.internal:8333)
+2026-11-06 09:17:14,761 INFO   downloaded s3://models/v1/config.json (799 bytes)
+2026-11-06 09:17:14,766 INFO   downloaded s3://models/v1/generation_config.json (111 bytes)
+INFO:     172.17.0.1:34222 - "GET /readyz HTTP/1.1" 503 Service Unavailable
+2026-11-06 09:17:15,994 INFO   downloaded s3://models/v1/model.safetensors (281715176 bytes)
+2026-11-06 09:17:16,002 INFO   downloaded s3://models/v1/model.sha256 (589 bytes)
+2026-11-06 09:17:16,007 INFO   downloaded s3://models/v1/special_tokens_map.json (473 bytes)
+2026-11-06 09:17:16,040 INFO   downloaded s3://models/v1/tokenizer.json (3564303 bytes)
+2026-11-06 09:17:16,046 INFO   downloaded s3://models/v1/tokenizer_config.json (4846 bytes)
+2026-11-06 09:17:16,050 INFO   downloaded s3://models/v1/version.json (354 bytes)
+2026-11-06 09:17:16,050 INFO Model download complete: 8 files in 1.3s
+INFO:     172.17.0.1:34236 - "GET /readyz HTTP/1.1" 503 Service Unavailable
+2026-11-06 09:17:16,573 INFO Model v1 loaded; ready
+INFO:     172.17.0.1:34244 - "GET /readyz HTTP/1.1" 200 OK
+INFO:     172.17.0.1:34256 - "GET /healthz HTTP/1.1" 200 OK
+INFO:     172.17.0.1:34268 - "GET /readyz HTTP/1.1" 200 OK
+INFO:     172.17.0.1:34270 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:34282 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:34296 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:34310 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:34316 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:34318 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:34332 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:34346 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:34356 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:34366 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:34380 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:34382 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:34398 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:34402 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:34406 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:34410 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:43884 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:43898 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:43902 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:43914 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:43924 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:43928 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:43942 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:43956 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:43970 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:43980 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:43996 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:44010 - "POST /parse HTTP/1.1" 200 OK
+2026-11-06 09:17:29,692 WARNING invalid model output for 'what is the weather at home': '{"intent": "weather_query", "date": null, "time": null, "place": "where I house house house house house house house house house house house house house house house house house house house house house house house house house house house house house house house house house house house house house house house house'
+INFO:     172.17.0.1:44018 - "POST /parse HTTP/1.1" 500 Internal Server Error
+INFO:     172.17.0.1:44020 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:44028 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:44044 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:44050 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:44066 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:44070 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:44084 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:44098 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:44104 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:44110 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:44116 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:37404 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:37414 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:37430 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:37432 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:37438 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:37442 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:37448 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:37452 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:37460 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:37470 - "POST /parse HTTP/1.1" 200 OK
+INFO:     172.17.0.1:37480 - "POST /parse HTTP/1.1" 200 OK

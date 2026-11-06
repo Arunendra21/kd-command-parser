@@ -21,7 +21,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-from core import build_prompt, extract_json_text, load_schema, validate
+from core import build_prompt, extract_json_text, load_schema, parse_output
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("kd-service")
@@ -121,7 +121,9 @@ def parse(body: dict, request: Request):
     raw = extract_json_text(generate(text))
     if FAULT_INJECT:
         raw = "not json"
-    frame = validate(raw, KEYS, INTENTS)
+    frame, how = parse_output(raw, text, KEYS, INTENTS)
+    if how == "salvaged":
+        log.warning("salvaged malformed model output for %r: %r -> %r", text, raw, frame)
     if frame is None:
         log.warning("invalid model output for %r: %r", text, raw)
         return JSONResponse({"error": "invalid_model_output"}, status_code=500, headers=headers())
