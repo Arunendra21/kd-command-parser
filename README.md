@@ -24,6 +24,17 @@ cluster, and the model is loaded from SeaweedFS object storage.
                                             └──────────────────────────────────────────────────────┘
 ```
 
+## Results at a glance (all measured; details in the report and `results/`)
+
+| | |
+|---|---|
+| Teacher labelling | 3 parallel shard workers, 3,000/3,000 ids, 2,811 records kept after cleaning |
+| Validation (100) | teacher full frame 46%; untrained Pythia 0%; student v1 full frame 52%, JSON validity 98% strict / 100% as served |
+| Container (1 CPU / 1 GiB) | 50/50 requests HTTP 200, peak memory 816.5 MiB, no OOM, image 1.69 GB without weights |
+| Kubernetes | cold start median 5 s; HPA 1→2→1; rolling update v1→v2→undo with 0 failed requests; 50/50 load balancing |
+| Standard load test | p50 960 ms, p95 1,400 ms, 4.07 req/s, 0% errors; INR 0.54 per 1,000 requests |
+| CI | [passing run (model-v1)](https://github.com/Arunendra21/kd-command-parser/actions/runs/42193828050) · [quality gate failing on untrained Pythia](https://github.com/Arunendra21/kd-command-parser/actions/runs/42193836249) |
+
 ## Repository layout
 
 | Path | What |

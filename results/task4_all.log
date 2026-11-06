@@ -62,3 +62,300 @@ run1 kd-service-6797f8b74-2lqkr 6
 INFO:     10.42.0.1:43700 - "GET /readyz HTTP/1.1" 503 Service Unavailable
 2026-11-06 09:44:57,751 INFO Model v1 loaded; ready
 INFO:     10.42.0.1:43714 - "GET /readyz HTTP/1.1" 200 OK
+pod "kd-service-6797f8b74-2lqkr" deleted
+15:15:06 run2 ready-endpoints=[] pods: kd-service-6797f8b74-2lqkr:1/1:Terminating kd-service-6797f8b74-t5jh4:0/1:Running 
+15:15:07 run2 ready-endpoints=[] pods: kd-service-6797f8b74-2lqkr:1/1:Terminating kd-service-6797f8b74-t5jh4:0/1:Running 
+15:15:08 run2 ready-endpoints=[] pods: kd-service-6797f8b74-2lqkr:1/1:Terminating kd-service-6797f8b74-t5jh4:0/1:Running 
+15:15:09 run2 ready-endpoints=[] pods: kd-service-6797f8b74-2lqkr:1/1:Terminating kd-service-6797f8b74-t5jh4:0/1:Running 
+15:15:10 run2 ready-endpoints=[10.42.0.62] pods: kd-service-6797f8b74-2lqkr:1/1:Terminating kd-service-6797f8b74-t5jh4:1/1:Running 
+run2 kd-service-6797f8b74-t5jh4 4
+--- logs pod/kd-service-6797f8b74-2lqkr (model download)
+2026-11-06 09:44:55,896 INFO Downloading model from object storage: s3://models/v1 (endpoint http://seaweedfs-s3.data.svc.cluster.local:8333)
+2026-11-06 09:44:55,916 INFO   downloaded s3://models/v1/config.json (799 bytes)
+2026-11-06 09:44:55,920 INFO   downloaded s3://models/v1/generation_config.json (111 bytes)
+2026-11-06 09:44:57,187 INFO   downloaded s3://models/v1/model.safetensors (281715176 bytes)
+2026-11-06 09:44:57,192 INFO   downloaded s3://models/v1/model.sha256 (589 bytes)
+2026-11-06 09:44:57,196 INFO   downloaded s3://models/v1/special_tokens_map.json (473 bytes)
+2026-11-06 09:44:57,244 INFO   downloaded s3://models/v1/tokenizer.json (3564303 bytes)
+2026-11-06 09:44:57,253 INFO   downloaded s3://models/v1/tokenizer_config.json (4846 bytes)
+2026-11-06 09:44:57,257 INFO   downloaded s3://models/v1/version.json (354 bytes)
+2026-11-06 09:44:57,257 INFO Model download complete: 8 files in 1.4s
+INFO:     10.42.0.1:43700 - "GET /readyz HTTP/1.1" 503 Service Unavailable
+2026-11-06 09:44:57,751 INFO Model v1 loaded; ready
+INFO:     10.42.0.1:43714 - "GET /readyz HTTP/1.1" 200 OK
+INFO:     10.42.0.1:43718 - "GET /readyz HTTP/1.1" 200 OK
+INFO:     10.42.0.1:43732 - "GET /readyz HTTP/1.1" 200 OK
+INFO:     10.42.0.1:35390 - "GET /readyz HTTP/1.1" 200 OK
+INFO:     10.42.0.1:35400 - "GET /readyz HTTP/1.1" 200 OK
+INFO:     10.42.0.1:35414 - "GET /readyz HTTP/1.1" 200 OK
+pod "kd-service-6797f8b74-t5jh4" deleted
+15:15:16 run3 ready-endpoints=[] pods: kd-service-6797f8b74-mjhms:0/1:Running kd-service-6797f8b74-t5jh4:1/1:Terminating 
+15:15:17 run3 ready-endpoints=[] pods: kd-service-6797f8b74-mjhms:0/1:Running kd-service-6797f8b74-t5jh4:1/1:Terminating 
+15:15:19 run3 ready-endpoints=[] pods: kd-service-6797f8b74-mjhms:0/1:Running kd-service-6797f8b74-t5jh4:1/1:Terminating 
+15:15:20 run3 ready-endpoints=[] pods: kd-service-6797f8b74-mjhms:1/1:Running kd-service-6797f8b74-t5jh4:1/1:Terminating 
+15:15:21 run3 ready-endpoints=[10.42.0.63] pods: kd-service-6797f8b74-mjhms:1/1:Running kd-service-6797f8b74-t5jh4:1/1:Terminating 
+run3 kd-service-6797f8b74-mjhms 5
+--- logs pod/kd-service-6797f8b74-mjhms (model download)
+2026-11-06 09:45:18,216 INFO Downloading model from object storage: s3://models/v1 (endpoint http://seaweedfs-s3.data.svc.cluster.local:8333)
+2026-11-06 09:45:18,237 INFO   downloaded s3://models/v1/config.json (799 bytes)
+2026-11-06 09:45:18,241 INFO   downloaded s3://models/v1/generation_config.json (111 bytes)
+2026-11-06 09:45:18,866 INFO   downloaded s3://models/v1/model.safetensors (281715176 bytes)
+2026-11-06 09:45:18,871 INFO   downloaded s3://models/v1/model.sha256 (589 bytes)
+2026-11-06 09:45:18,875 INFO   downloaded s3://models/v1/special_tokens_map.json (473 bytes)
+2026-11-06 09:45:18,932 INFO   downloaded s3://models/v1/tokenizer.json (3564303 bytes)
+2026-11-06 09:45:18,936 INFO   downloaded s3://models/v1/tokenizer_config.json (4846 bytes)
+2026-11-06 09:45:18,940 INFO   downloaded s3://models/v1/version.json (354 bytes)
+2026-11-06 09:45:18,940 INFO Model download complete: 8 files in 0.7s
+2026-11-06 09:45:19,325 INFO Model v1 loaded; ready
+INFO:     10.42.0.1:49730 - "GET /readyz HTTP/1.1" 200 OK
+per-run cold start (s, slowest pod per run): [6, 4, 5]  median: 5
+
+===== [15:15:26] 4.4 HPA: wait for 1 replica, load, scale to 2, back to 1
+horizontalpodautoscaler.autoscaling/kd-service patched (no change)
+{
+  "requests": 900,
+  "failures": 0,
+  "error_rate_pct": 0.0,
+  "p50_ms": 1300.0,
+  "p95_ms": 1700.0,
+  "rps": 3.766,
+  "per_replica": {
+    "kd-service-6797f8b74-mjhms": 499,
+    "kd-service-6797f8b74-x8rs6": 403
+  },
+  "per_model_version": {
+    "v1": 902
+  },
+  "replica_share_pct": {
+    "kd-service-6797f8b74-mjhms": 55.3,
+    "kd-service-6797f8b74-x8rs6": 44.7
+  }
+}
+15:15:26 kd-service   Deployment/kd-service   cpu: <unknown>/70%   1     2     1     156m
+15:15:34 kd-service   Deployment/kd-service   cpu: <unknown>/70%   1     2     1     156m
+15:15:42 kd-service   Deployment/kd-service   cpu: <unknown>/70%   1     2     1     156m
+15:15:50 kd-service   Deployment/kd-service   cpu: <unknown>/70%   1     2     1     156m
+15:15:58 kd-service   Deployment/kd-service   cpu: <unknown>/70%   1     2     1     156m
+15:16:06 kd-service   Deployment/kd-service   cpu: 199%/70%   1     2     1     156m
+15:16:14 kd-service   Deployment/kd-service   cpu: 199%/70%   1     2     1     156m
+15:16:22 kd-service   Deployment/kd-service   cpu: 199%/70%   1     2     2     156m
+15:16:30 kd-service   Deployment/kd-service   cpu: 199%/70%   1     2     2     157m
+15:16:39 kd-service   Deployment/kd-service   cpu: 199%/70%   1     2     2     157m
+15:16:47 kd-service   Deployment/kd-service   cpu: 199%/70%   1     2     2     157m
+15:16:55 kd-service   Deployment/kd-service   cpu: 197%/70%   1     2     2     157m
+15:17:03 kd-service   Deployment/kd-service   cpu: 199%/70%   1     2     2     157m
+15:17:11 kd-service   Deployment/kd-service   cpu: 199%/70%   1     2     2     157m
+15:17:19 kd-service   Deployment/kd-service   cpu: 198%/70%   1     2     2     157m
+15:17:27 kd-service   Deployment/kd-service   cpu: 198%/70%   1     2     2     158m
+15:17:35 kd-service   Deployment/kd-service   cpu: 199%/70%   1     2     2     158m
+15:17:43 kd-service   Deployment/kd-service   cpu: 199%/70%   1     2     2     158m
+15:17:51 kd-service   Deployment/kd-service   cpu: 199%/70%   1     2     2     158m
+15:17:59 kd-service   Deployment/kd-service   cpu: 199%/70%   1     2     2     158m
+15:18:07 kd-service   Deployment/kd-service   cpu: 198%/70%   1     2     2     158m
+15:18:15 kd-service   Deployment/kd-service   cpu: 198%/70%   1     2     2     158m
+15:18:23 kd-service   Deployment/kd-service   cpu: 198%/70%   1     2     2     158m
+15:18:31 kd-service   Deployment/kd-service   cpu: 198%/70%   1     2     2     159m
+15:18:40 kd-service   Deployment/kd-service   cpu: 199%/70%   1     2     2     159m
+15:18:48 kd-service   Deployment/kd-service   cpu: 200%/70%   1     2     2     159m
+15:18:56 kd-service   Deployment/kd-service   cpu: 200%/70%   1     2     2     159m
+15:19:04 kd-service   Deployment/kd-service   cpu: 199%/70%   1     2     2     159m
+15:19:12 kd-service   Deployment/kd-service   cpu: 199%/70%   1     2     2     159m
+15:19:20 kd-service   Deployment/kd-service   cpu: 199%/70%   1     2     2     159m
+15:19:28 kd-service   Deployment/kd-service   cpu: 199%/70%   1     2     2     160m
+15:19:36 kd-service   Deployment/kd-service   cpu: 199%/70%   1     2     2     160m
+15:19:44 kd-service   Deployment/kd-service   cpu: 199%/70%   1     2     2     160m
+15:19:52 kd-service   Deployment/kd-service   cpu: 177%/70%   1     2     2     160m
+15:20:00 kd-service   Deployment/kd-service   cpu: 177%/70%   1     2     2     160m
+15:20:08 kd-service   Deployment/kd-service   cpu: 78%/70%   1     2     2     160m
+15:20:16 kd-service   Deployment/kd-service   cpu: 78%/70%   1     2     2     160m
+15:20:24 kd-service   Deployment/kd-service   cpu: 0%/70%   1     2     2     160m
+15:20:32 kd-service   Deployment/kd-service   cpu: 0%/70%   1     2     2     161m
+15:20:40 kd-service   Deployment/kd-service   cpu: 0%/70%   1     2     2     161m
+15:20:48 kd-service   Deployment/kd-service   cpu: 0%/70%   1     2     2     161m
+15:20:56 kd-service   Deployment/kd-service   cpu: 0%/70%   1     2     2     161m
+15:21:04 kd-service   Deployment/kd-service   cpu: 0%/70%   1     2     2     161m
+15:21:13 kd-service   Deployment/kd-service   cpu: 0%/70%   1     2     2     161m
+15:21:21 kd-service   Deployment/kd-service   cpu: 0%/70%   1     2     1     161m
+15:21:29 kd-service   Deployment/kd-service   cpu: 0%/70%   1     2     1     162m
+15:21:37 kd-service   Deployment/kd-service   cpu: 0%/70%   1     2     1     162m
+15:21:45 kd-service   Deployment/kd-service   cpu: 0%/70%   1     2     1     162m
+15:21:53 kd-service   Deployment/kd-service   cpu: 0%/70%   1     2     1     162m
+  ----     ------                        ----                  ----                       -------
+  Warning  FailedComputeMetricsReplicas  160m (x4 over 162m)   horizontal-pod-autoscaler  invalid metrics (1 invalid out of 1), first error is: failed to get cpu resource metric value: failed to get cpu utilization: unable to get metrics for resource cpu: no metrics returned from resource metrics API
+  Warning  FailedGetResourceMetric       160m (x4 over 162m)   horizontal-pod-autoscaler  failed to get cpu utilization: unable to get metrics for resource cpu: no metrics returned from resource metrics API
+  Normal   SuccessfulRescale             159m                  horizontal-pod-autoscaler  New size: 2; reason: cpu resource utilization (percentage of request) above target
+  Normal   SuccessfulRescale             153m                  horizontal-pod-autoscaler  New size: 2; reason: Current number of replicas below Spec.MinReplicas
+  Warning  FailedComputeMetricsReplicas  149m (x7 over 162m)   horizontal-pod-autoscaler  invalid metrics (1 invalid out of 1), first error is: failed to get cpu resource metric value: failed to get cpu utilization: did not receive metrics for targeted pods (pods might be unready)
+  Warning  FailedGetResourceMetric       149m (x8 over 162m)   horizontal-pod-autoscaler  failed to get cpu utilization: did not receive metrics for targeted pods (pods might be unready)
+  Normal   SuccessfulRescale             141m (x3 over 160m)   horizontal-pod-autoscaler  New size: 1; reason: All metrics below target
+  Warning  FailedGetResourceMetric       111m                  horizontal-pod-autoscaler  failed to get cpu utilization: unable to get metrics for resource cpu: unable to fetch metrics from resource metrics API: the server is currently unable to handle the request (get pods.metrics.k8s.io)
+  Warning  FailedComputeMetricsReplicas  111m                  horizontal-pod-autoscaler  invalid metrics (1 invalid out of 1), first error is: failed to get cpu resource metric value: failed to get cpu utilization: unable to get metrics for resource cpu: unable to fetch metrics from resource metrics API: the server is currently unable to handle the request (get pods.metrics.k8s.io)
+  Warning  FailedGetResourceMetric       43m                   horizontal-pod-autoscaler  failed to get cpu utilization: unable to get metrics for resource cpu: no metrics returned from resource metrics API
+  Warning  FailedComputeMetricsReplicas  43m                   horizontal-pod-autoscaler  invalid metrics (1 invalid out of 1), first error is: failed to get cpu resource metric value: failed to get cpu utilization: unable to get metrics for resource cpu: no metrics returned from resource metrics API
+  Warning  FailedGetResourceMetric       7m39s (x44 over 43m)  horizontal-pod-autoscaler  failed to get cpu utilization: did not receive metrics for targeted pods (pods might be unready)
+  Warning  FailedComputeMetricsReplicas  7m39s (x44 over 43m)  horizontal-pod-autoscaler  invalid metrics (1 invalid out of 1), first error is: failed to get cpu resource metric value: failed to get cpu utilization: did not receive metrics for targeted pods (pods might be unready)
+  Normal   SuccessfulRescale             54s (x4 over 32m)     horizontal-pod-autoscaler  New size: 1; reason: All metrics below target
+
+===== [15:21:56] 4.8 load balancing with exactly two Ready replicas (minReplicas temporarily 2)
+horizontalpodautoscaler.autoscaling/kd-service patched
+NAME                         READY   STATUS    RESTARTS   AGE     IP           NODE                   NOMINATED NODE   READINESS GATES
+kd-service-6797f8b74-mjhms   1/1     Running   0          6m52s   10.42.0.63   k3d-kdcloud-server-0   <none>           <none>
+kd-service-6797f8b74-v2khx   1/1     Running   0          5s      10.42.0.65   k3d-kdcloud-server-0   <none>           <none>
+{
+  "requests": 497,
+  "failures": 0,
+  "error_rate_pct": 0.0,
+  "p50_ms": 930.0,
+  "p95_ms": 1400.0,
+  "rps": 4.181,
+  "per_replica": {
+    "kd-service-6797f8b74-mjhms": 250,
+    "kd-service-6797f8b74-v2khx": 251
+  },
+  "per_model_version": {
+    "v1": 501
+  },
+  "replica_share_pct": {
+    "kd-service-6797f8b74-mjhms": 49.9,
+    "kd-service-6797f8b74-v2khx": 50.1
+  }
+}
+
+===== [15:24:07] 4.5 rolling update v1 -> v2 under load, then rollout undo
+horizontalpodautoscaler.autoscaling/kd-service patched (no change)
+deployment.apps/kd-service env updated
+Waiting for deployment "kd-service" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "kd-service" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "kd-service" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "kd-service" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "kd-service" rollout to finish: 1 old replicas are pending termination...
+deployment "kd-service" successfully rolled out
+X-Model-Version: v1
+X-Model-Version: v2
+X-Model-Version: v2
+deployment.apps/kd-service 
+REVISION  CHANGE-CAUSE
+2         <none>
+3         <none>
+5         <none>
+6         <none>
+7         <none>
+8         <none>
+
+deployment.apps/kd-service rolled back
+Waiting for deployment "kd-service" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "kd-service" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "kd-service" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "kd-service" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "kd-service" rollout to finish: 1 old replicas are pending termination...
+deployment "kd-service" successfully rolled out
+{
+  "requests": 1463,
+  "failures": 0,
+  "error_rate_pct": 0.0,
+  "p50_ms": 950.0,
+  "p95_ms": 1400.0,
+  "rps": 4.074,
+  "per_replica": {
+    "kd-service-6797f8b74-v2khx": 75,
+    "kd-service-6797f8b74-mjhms": 92,
+    "kd-service-75447458c4-xh9v6": 99,
+    "kd-service-75447458c4-47nlv": 93,
+    "kd-service-6797f8b74-cg8ns": 559,
+    "kd-service-6797f8b74-6v29p": 547
+  },
+  "per_model_version": {
+    "v1": 1273,
+    "v2": 192
+  },
+  "replica_share_pct": {
+    "kd-service-6797f8b74-v2khx": 5.1,
+    "kd-service-6797f8b74-mjhms": 6.3,
+    "kd-service-75447458c4-xh9v6": 6.8,
+    "kd-service-75447458c4-47nlv": 6.3,
+    "kd-service-6797f8b74-cg8ns": 38.2,
+    "kd-service-6797f8b74-6v29p": 37.3
+  }
+}
+
+===== [15:30:07] after rollback
+X-Model-Version: v1
+X-Model-Version: v1
+X-Model-Version: v1
+[{"name":"MODEL_URI","value":"s3://models/v1"},{"name":"MODEL_VERSION","value":"v1"},{"name":"S3_ENDPOINT","value":"http://seaweedfs-s3.data.svc.cluster.local:8333"},{"name":"MAX_NEW_TOKENS","value":"64"},{"name":"FAULT_INJECT","value":"0"},{"name":"POD_NAME","valueFrom":{"fieldRef":{"apiVersion":"v1","fieldPath":"metadata.name"}}}]
+
+===== [15:30:09] 4.6 recovery: delete one pod under load
+15:30:40 deleting pod/kd-service-6797f8b74-6v29p
+pod "kd-service-6797f8b74-6v29p" deleted
+15:30:40 kd-service   1/2   1     1     171m
+15:30:42 kd-service   1/2   2     1     171m
+15:30:44 kd-service   1/2   2     1     171m
+15:30:46 kd-service   1/2   2     1     171m
+15:30:48 kd-service   2/2   2     2     171m
+15:30:50 kd-service   2/2   2     2     171m
+15:30:52 kd-service   2/2   2     2     171m
+15:30:54 kd-service   2/2   2     2     171m
+15:30:56 kd-service   2/2   2     2     171m
+15:30:58 kd-service   2/2   2     2     171m
+15:31:00 kd-service   2/2   2     2     171m
+15:31:02 kd-service   2/2   2     2     171m
+15:31:04 kd-service   2/2   2     2     171m
+15:31:07 kd-service   2/2   2     2     171m
+15:31:09 kd-service   2/2   2     2     171m
+15:31:11 kd-service   2/2   2     2     171m
+15:31:13 kd-service   2/2   2     2     171m
+15:31:15 kd-service   2/2   2     2     171m
+15:31:17 kd-service   2/2   2     2     171m
+15:31:19 kd-service   2/2   2     2     171m
+15:31:21 kd-service   2/2   2     2     171m
+15:31:23 kd-service   2/2   2     2     171m
+15:31:25 kd-service   2/2   2     2     172m
+15:31:27 kd-service   2/2   2     2     172m
+15:31:29 kd-service   2/2   2     2     172m
+15:31:31 kd-service   2/2   2     2     172m
+15:31:33 kd-service   2/2   2     2     172m
+15:31:35 kd-service   2/2   2     2     172m
+15:31:38 kd-service   2/2   2     2     172m
+15:31:40 kd-service   2/2   2     2     172m
+15:31:42 kd-service   2/2   2     2     172m
+15:31:44 kd-service   2/2   2     2     172m
+15:31:46 kd-service   2/2   2     2     172m
+15:31:48 kd-service   2/2   2     2     172m
+15:31:50 kd-service   2/2   2     2     172m
+15:31:52 kd-service   2/2   2     2     172m
+15:31:54 kd-service   2/2   2     2     172m
+15:31:56 kd-service   2/2   2     2     172m
+15:31:58 kd-service   2/2   2     2     172m
+15:32:00 kd-service   2/2   2     2     172m
+15:32:02 kd-service   2/2   2     2     172m
+15:32:04 kd-service   2/2   2     2     172m
+15:32:07 kd-service   2/2   2     2     172m
+15:32:09 kd-service   2/2   2     2     172m
+15:32:11 kd-service   2/2   2     2     172m
+{
+  "requests": 723,
+  "failures": 0,
+  "error_rate_pct": 0.0,
+  "p50_ms": 990.0,
+  "p95_ms": 1600.0,
+  "rps": 4.035,
+  "per_replica": {
+    "kd-service-6797f8b74-6v29p": 63,
+    "kd-service-6797f8b74-cg8ns": 369,
+    "kd-service-6797f8b74-25mgd": 293
+  },
+  "per_model_version": {
+    "v1": 725
+  },
+  "replica_share_pct": {
+    "kd-service-6797f8b74-6v29p": 8.7,
+    "kd-service-6797f8b74-cg8ns": 50.9,
+    "kd-service-6797f8b74-25mgd": 40.4
+  }
+}
+NAME                         READY   STATUS    RESTARTS   AGE     IP           NODE                   NOMINATED NODE   READINESS GATES
+kd-service-6797f8b74-25mgd   1/1     Running   0          2m30s   10.42.0.70   k3d-kdcloud-server-0   <none>           <none>
+kd-service-6797f8b74-cg8ns   1/1     Running   0          7m44s   10.42.0.68   k3d-kdcloud-server-0   <none>           <none>
+horizontalpodautoscaler.autoscaling/kd-service patched
+NAME         REFERENCE               TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+kd-service   Deployment/kd-service   cpu: 199%/70%   1         2         2          173m

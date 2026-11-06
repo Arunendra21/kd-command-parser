@@ -1,0 +1,10 @@
+{
+  "per_replica": {
+    "kd-service-6797f8b74-6v29p": 63,
+    "kd-service-6797f8b74-cg8ns": 369,
+    "kd-service-6797f8b74-25mgd": 293
+  },
+  "per_model_version": {
+    "v1": 725
+  }
+}

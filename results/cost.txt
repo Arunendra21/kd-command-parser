@@ -1,0 +1,5 @@
+replicas=2  cpu_limit=1.0 vCPU  mem_limit=1.0 GiB
+per replica: 1.0 x 3.5 + 1.0 x 0.45 = 3.9500 INR/h
+all replicas: 2 x 3.9500 = 7.9000 INR/h
+requests/hour: 4.074 rps x 3600 = 14666.4
+cost per 1000 requests = 7.9000 / 14666.4 x 1000 = 0.5386 INR

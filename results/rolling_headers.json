@@ -1,0 +1,14 @@
+{
+  "per_replica": {
+    "kd-service-6797f8b74-v2khx": 75,
+    "kd-service-6797f8b74-mjhms": 92,
+    "kd-service-75447458c4-xh9v6": 99,
+    "kd-service-75447458c4-47nlv": 93,
+    "kd-service-6797f8b74-cg8ns": 559,
+    "kd-service-6797f8b74-6v29p": 547
+  },
+  "per_model_version": {
+    "v1": 1273,
+    "v2": 192
+  }
+}

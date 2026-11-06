@@ -1,0 +1,56 @@
+--- 15:33:24
+kd-service-6797f8b74-25mgd   862m   362Mi   
+kd-service-6797f8b74-cg8ns   999m   439Mi   
+kd-service   Deployment/kd-service   cpu: 186%/70%   1     2     2     173m
+--- 15:33:34
+kd-service-6797f8b74-25mgd   358m   370Mi   
+kd-service-6797f8b74-cg8ns   103m   400Mi   
+kd-service   Deployment/kd-service   cpu: 46%/70%   1     2     2     174m
+--- 15:33:44
+kd-service-6797f8b74-25mgd   358m   370Mi   
+kd-service-6797f8b74-cg8ns   103m   400Mi   
+kd-service   Deployment/kd-service   cpu: 46%/70%   1     2     2     174m
+--- 15:33:54
+kd-service-6797f8b74-25mgd   358m    370Mi   
+kd-service-6797f8b74-cg8ns   1000m   412Mi   
+kd-service   Deployment/kd-service   cpu: 135%/70%   1     2     2     174m
+--- 15:34:04
+kd-service-6797f8b74-25mgd   1000m   374Mi   
+kd-service-6797f8b74-cg8ns   999m    419Mi   
+kd-service   Deployment/kd-service   cpu: 199%/70%   1     2     2     174m
+--- 15:34:15
+kd-service-6797f8b74-25mgd   1000m   374Mi   
+kd-service-6797f8b74-cg8ns   999m    419Mi   
+kd-service   Deployment/kd-service   cpu: 199%/70%   1     2     2     174m
+--- 15:34:25
+kd-service-6797f8b74-25mgd   1000m   375Mi   
+kd-service-6797f8b74-cg8ns   1000m   420Mi   
+kd-service   Deployment/kd-service   cpu: 200%/70%   1     2     2     175m
+--- 15:34:35
+kd-service-6797f8b74-25mgd   1000m   381Mi   
+kd-service-6797f8b74-cg8ns   1000m   407Mi   
+kd-service   Deployment/kd-service   cpu: 200%/70%   1     2     2     175m
+--- 15:34:45
+kd-service-6797f8b74-25mgd   1000m   381Mi   
+kd-service-6797f8b74-cg8ns   1000m   407Mi   
+kd-service   Deployment/kd-service   cpu: 200%/70%   1     2     2     175m
+--- 15:34:55
+kd-service-6797f8b74-25mgd   999m   383Mi   
+kd-service-6797f8b74-cg8ns   999m   414Mi   
+kd-service   Deployment/kd-service   cpu: 199%/70%   1     2     2     175m
+--- 15:35:05
+kd-service-6797f8b74-25mgd   997m   383Mi   
+kd-service-6797f8b74-cg8ns   996m   414Mi   
+kd-service   Deployment/kd-service   cpu: 199%/70%   1     2     2     175m
+--- 15:35:15
+kd-service-6797f8b74-25mgd   997m   383Mi   
+kd-service-6797f8b74-cg8ns   996m   414Mi   
+kd-service   Deployment/kd-service   cpu: 199%/70%   1     2     2     175m
+--- 15:35:26
+kd-service-6797f8b74-25mgd   998m   383Mi   
+kd-service-6797f8b74-cg8ns   999m   414Mi   
+kd-service   Deployment/kd-service   cpu: 199%/70%   1     2     2     176m
+--- 15:35:36
+kd-service-6797f8b74-25mgd   999m   384Mi   
+kd-service-6797f8b74-cg8ns   734m   413Mi   
+kd-service   Deployment/kd-service   cpu: 173%/70%   1     2     2     176m

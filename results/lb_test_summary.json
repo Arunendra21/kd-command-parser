@@ -1,0 +1,19 @@
+{
+  "requests": 497,
+  "failures": 0,
+  "error_rate_pct": 0.0,
+  "p50_ms": 930.0,
+  "p95_ms": 1400.0,
+  "rps": 4.181,
+  "per_replica": {
+    "kd-service-6797f8b74-mjhms": 250,
+    "kd-service-6797f8b74-v2khx": 251
+  },
+  "per_model_version": {
+    "v1": 501
+  },
+  "replica_share_pct": {
+    "kd-service-6797f8b74-mjhms": 49.9,
+    "kd-service-6797f8b74-v2khx": 50.1
+  }
+}
