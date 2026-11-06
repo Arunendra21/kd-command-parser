@@ -1,0 +1,5 @@
+created bucket datasets
+created bucket models
+uploaded s3://datasets/commands_pool.jsonl
+s3://datasets: ['commands_pool.jsonl']
+s3://models: []

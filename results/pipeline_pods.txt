@@ -1,0 +1,8 @@
+NAME                    READY   STATUS    RESTARTS   AGE   IP           NODE                   NOMINATED NODE   READINESS GATES
+teacher-label-0-5mxvh   1/1     Running   0          6s    10.42.0.31   k3d-kdcloud-server-0   <none>           <none>
+teacher-label-1-qxndw   1/1     Running   0          6s    10.42.0.33   k3d-kdcloud-server-0   <none>           <none>
+teacher-label-2-s9t2j   1/1     Running   0          6s    10.42.0.32   k3d-kdcloud-server-0   <none>           <none>
+NAME                    READY   STATUS      RESTARTS   AGE   IP           NODE                   NOMINATED NODE   READINESS GATES
+teacher-label-0-5mxvh   0/1     Completed   0          26m   10.42.0.31   k3d-kdcloud-server-0   <none>           <none>
+teacher-label-1-qxndw   0/1     Completed   0          26m   10.42.0.33   k3d-kdcloud-server-0   <none>           <none>
+teacher-label-2-s9t2j   0/1     Completed   0          26m   10.42.0.32   k3d-kdcloud-server-0   <none>           <none>

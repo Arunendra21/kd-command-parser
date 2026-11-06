@@ -1,0 +1,2 @@
+training v1 on 1500 records from results/datasets/v1/train.jsonl
+torch 2.4.1+cpu, config library_versions: {'python': '3.11', 'torch': '2.4.1+cpu', 'transformers': '4.46.3', 'tokenizers': '0.20.3', 'safetensors': '0.4.5', 'pyyaml': '6.0.3'}

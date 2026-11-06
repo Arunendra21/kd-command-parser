@@ -1,0 +1,39 @@
+test -n "https://formed-survive-navigator-villas.trycloudflare.com" || { echo "set OLLAMA_URL=https://...  (see colab/teacher_ollama.ipynb)"; exit 1; }
+kubectl -n pipeline create configmap teacher-prompt --from-file=prompts/teacher_prompt.txt \
+  --dry-run=client -o yaml | kubectl apply -f -
+kubectl -n pipeline delete job teacher-label --ignore-not-found
+sed -e 's#__SHARD_COUNT__#3#g' -e 's#__OLLAMA_URL__#https://formed-survive-navigator-villas.trycloudflare.com#g' \
+  k8s/pipeline/teacher-job.yaml | kubectl apply -f -
+sleep 5; kubectl -n pipeline get pods -o wide | tee results/pipeline_pods.txt
+for i in $(seq 1 2160); do  # up to 6 h; stop early if the Job fails
+s=$(kubectl -n pipeline get job teacher-label -o jsonpath='{.status.succeeded}')
+f=$(kubectl -n pipeline get job teacher-label -o jsonpath='{.status.conditions[?(@.type=="Failed")].status}')
+[ "${s:-0}" = "3" ] && break
+[ "$f" = True ] && { echo "teacher-label Job failed"; kubectl -n pipeline describe job teacher-label | tail; exit 1; }
+sleep 10
+done
+kubectl -n pipeline get pods -o wide | tee -a results/pipeline_pods.txt
+for p in $(kubectl -n pipeline get pods -l app=teacher-worker -o name); do
+kubectl -n pipeline logs $p > results/worker_${p#pod/}.log; done
+( set -a && . ./.secrets/s3.env && set +a && export S3_ENDPOINT=http://localhost:8333 && cd worker && python -c "import s3util, os; s=s3util.client(); \
+  os.makedirs('../results/teacher_shards', exist_ok=True); \
+  [s.download_file('datasets', k, '../results/teacher_shards/' + k.split('/')[-1]) for k in s3util.list_keys(s, 'datasets', 'teacher/shard-')]" )
+python scripts/check_shards.py results/teacher_shards data/commands_pool.jsonl | tee results/shard_check.txt
+configmap/teacher-prompt configured
+job.batch "teacher-label" deleted
+job.batch/teacher-label created
+NAME                    READY   STATUS    RESTARTS   AGE   IP           NODE                   NOMINATED NODE   READINESS GATES
+teacher-label-0-5mxvh   1/1     Running   0          6s    10.42.0.31   k3d-kdcloud-server-0   <none>           <none>
+teacher-label-1-qxndw   1/1     Running   0          6s    10.42.0.33   k3d-kdcloud-server-0   <none>           <none>
+teacher-label-2-s9t2j   1/1     Running   0          6s    10.42.0.32   k3d-kdcloud-server-0   <none>           <none>
+NAME                    READY   STATUS      RESTARTS   AGE   IP           NODE                   NOMINATED NODE   READINESS GATES
+teacher-label-0-5mxvh   0/1     Completed   0          26m   10.42.0.31   k3d-kdcloud-server-0   <none>           <none>
+teacher-label-1-qxndw   0/1     Completed   0          26m   10.42.0.33   k3d-kdcloud-server-0   <none>           <none>
+teacher-label-2-s9t2j   0/1     Completed   0          26m   10.42.0.32   k3d-kdcloud-server-0   <none>           <none>
+shard-0.jsonl: 1000 records
+shard-1.jsonl: 1000 records
+shard-2.jsonl: 1000 records
+pool: 3000  labelled: 3000  unique: 3000
+missing: 0 []
+repeated: 0 []
+unknown ids: 0

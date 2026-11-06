@@ -11,8 +11,8 @@ if part resources; then
   say "4.1-4.4 objects, requests/limits, probes, HPA"
   $K get deploy,rs,pods,svc,endpoints,ingress,hpa -o wide
   $K get deploy kd-service -o jsonpath='{.spec.template.spec.containers[0].resources}{"\n"}{.spec.template.spec.containers[0].readinessProbe}{"\n"}{.spec.template.spec.containers[0].livenessProbe}{"\n"}'
-  say "/parse through the Ingress (localhost:8080)"
-  curl -si -X POST localhost:8080/parse -H 'content-type: application/json' -d '{"text":"what is the weather in london"}'; echo
+  say "/parse through the Ingress ($LOCUST_HOST)"
+  curl -si -X POST "$LOCUST_HOST/parse" -H 'content-type: application/json' -d '{"text":"what is the weather in london"}'; echo
 fi
 
 if part coldstart; then
@@ -79,7 +79,7 @@ if part rolling; then
   sleep 30
   $K set env deployment/kd-service MODEL_URI=s3://models/v2 MODEL_VERSION=v2
   $K rollout status deploy/kd-service --timeout=300s
-  for i in 1 2 3; do curl -s -D - -o /dev/null -X POST localhost:8080/parse -H 'content-type: application/json' -d '{"text":"wake me at six am"}' | grep -i x-model-version; done
+  for i in 1 2 3; do curl -s -D - -o /dev/null -X POST "$LOCUST_HOST/parse" -H 'content-type: application/json' -d '{"text":"wake me at six am"}' | grep -i x-model-version; done
   sleep 30
   $K rollout history deploy/kd-service
   $K rollout undo deploy/kd-service
@@ -87,7 +87,7 @@ if part rolling; then
   wait $L
   python3 scripts/locust_summary.py results/rolling
   say "after rollback"
-  for i in 1 2 3; do curl -s -D - -o /dev/null -X POST localhost:8080/parse -H 'content-type: application/json' -d '{"text":"wake me at six am"}' | grep -i x-model-version; done
+  for i in 1 2 3; do curl -s -D - -o /dev/null -X POST "$LOCUST_HOST/parse" -H 'content-type: application/json' -d '{"text":"wake me at six am"}' | grep -i x-model-version; done
   $K get deploy kd-service -o jsonpath='{.spec.template.spec.containers[0].env}{"\n"}'
 fi
 
