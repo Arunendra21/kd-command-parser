@@ -80,7 +80,7 @@ def main():
 
     seed = int(cfg["seed"])
     set_seed(seed)
-    torch.set_num_threads(os.cpu_count() or 1)
+    torch.set_num_threads(int(os.environ.get("TRAIN_THREADS", os.cpu_count() or 1)))
 
     out_dir = cfg["output_dir"] if not a.subset else f"artifacts/subset{a.subset}"
     loss_csv = cfg["loss_csv"] if not a.subset else f"training/loss_subset{a.subset}.csv"

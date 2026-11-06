@@ -1,0 +1,14 @@
+training v2 on 1500 records from results/datasets/v1/train.jsonl
+torch 2.4.1+cpu, config library_versions: {'python': '3.11', 'torch': '2.4.1+cpu', 'transformers': '4.46.3', 'tokenizers': '0.20.3', 'safetensors': '0.4.5', 'pyyaml': '6.0.3'}
+epoch 1/11 loss 0.5511 (170s)
+epoch 2/11 loss 0.3424 (185s)
+epoch 3/11 loss 0.1764 (186s)
+epoch 4/11 loss 0.1136 (171s)
+epoch 5/11 loss 0.0899 (173s)
+epoch 6/11 loss 0.0634 (174s)
+epoch 7/11 loss 0.0404 (172s)
+epoch 8/11 loss 0.0270 (177s)
+epoch 9/11 loss 0.0182 (169s)
+epoch 10/11 loss 0.0059 (173s)
+epoch 11/11 loss 0.0022 (174s)
+saved model and tokenizer to artifacts/v2; loss per epoch in training/loss_v2.csv

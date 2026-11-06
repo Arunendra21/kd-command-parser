@@ -1,0 +1,14 @@
+{
+  "version": "v2",
+  "base_model": "EleutherAI/pythia-70m",
+  "train_records": 1500,
+  "train_sha256": "d80d7e7bc4073d80470b8222737b8f9e2a358831d5e80143cabdb13fc221c365",
+  "seed": 42,
+  "epochs": 11,
+  "learning_rate": 0.0003,
+  "batch_size": 16,
+  "max_seq_length": 128,
+  "torch": "2.4.1+cpu",
+  "transformers": "4.46.3",
+  "train_seconds": 1925.4
+}
