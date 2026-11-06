@@ -8,3 +8,6 @@ ignore = ["E741", "E731", "I001"]
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.ruff.lint.per-file-ignores]
+"report/build_report.py" = ["E501"]
